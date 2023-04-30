@@ -1,25 +1,22 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import LeftDrawer from './components/permanentDrawer';
+import { ThemeProvider} from "@mui/material/styles";
+import theme from './theme';
 
-function App() {
+const fs = window.require('fs');
+const pathModule = window.require('path');
+
+const { app } = window.require('@electron/remote');
+
+export default function App() {
+  const [path, setPath] = React.useState(app.getAppPath());
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <React.Fragment>
+      <ThemeProvider theme={theme}>
+        <LeftDrawer />
+      </ThemeProvider>
+    </React.Fragment>
   );
 }
 
-export default App;
