@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import LeftDrawer from './components/PermanentDrawer';
-import { ThemeProvider } from '@mui/material/styles';
-import theme from './theme';
-import { FilesViewer } from './components/FilesViewer';
 import pathModule from 'path';
-import Layout from './Layout';
+import FilesViewer from './FilesViewer.jsx';
+import { TextField, Typography } from '@mui/material';
+import Editor from './Editor.jsx';
 
-export default function App() {
+export const FileBrowser = () => {
   const [path, setPath] = useState('');
   const [files, setFiles] = useState([]);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
     window.api.invoke('get-app-path').then(setPath);
@@ -21,25 +20,27 @@ export default function App() {
   }, [path]);
 
   const onBack = () => setPath(pathModule.dirname(path));
-  const onOpen = folder => setPath(pathModule.join(path, folder));
+  const onOpen = file => {
+    if (file.isDirectory) {
+      setPath(pathModule.join(path, file));
+    } else if ( file.extension === '.rtf') {
+      setSelectedFile(file);
+    }
+  };
 
   const [searchString, setSearchString] = useState('');
   const filteredFiles = files.filter(s => s.name.includes(searchString));
 
   return (
-    <React.Fragment>
-      <ThemeProvider theme={theme}>
-        <div>
-          <h4>{path}</h4>
-          <input
-            placeholder="Search Files"
-            onChange={event => setSearchString(event.target.value)}
-            value={searchString}
-          />
-        </div>
-        <FilesViewer files={filteredFiles} onBack={onBack} onOpen={onOpen} />
-        <LeftDrawer />
-      </ThemeProvider>
-    </React.Fragment>
+    <div>
+      <Typography variant="h6">{path}</Typography>
+      <TextField
+        placeholder="Search Files"
+        onChange={event => setSearchString(event.target.value)}
+        value={searchString}
+      />
+      <FilesViewer files={filteredFiles} onBack={onBack} onOpen={onOpen} />
+      {selectedFile && <Editor file={selectedFile} />}
+    </div>
   );
 }

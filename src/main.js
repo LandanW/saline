@@ -1,6 +1,8 @@
 const { app, BrowserWindow } = require('electron')
 const fs = require('fs');
 const path = require('path');
+const rtfToHTML = require('@iarna/rtf-to-html');
+
 
 require('@electron/remote/main').initialize()
 
@@ -61,4 +63,14 @@ ipcMain.handle('read-dir', (event, dirPath) => {
       return a.isDirectory ? -1 : 1;
     });
   return files;
+});
+
+ipcMain.on('read-rtf', (event, filePath) => {
+  fs.createReadStream(filePath).pipe(rtfToHTML((err, html) => {
+    if (err) {
+      console.error(err);
+    } else {
+      event.reply('rtf-content', html);
+    }
+  }));
 });

@@ -5,10 +5,12 @@ import Layout from './Layout';
 
 export default function App() {
   return (
+    <div className="app">
     <React.Fragment>
       <ThemeProvider theme={theme}>
         <Layout />
       </ThemeProvider>
     </React.Fragment>
+    </div>
   );
 }
