@@ -82,3 +82,23 @@ ipcMain.handle('read-rtf', async (event, filePath) => {
 ipcMain.handle('read-txt', async (event, filePath) => {
   return fs.promises.readFile(filePath, 'utf-8');
 });
+
+ipcMain.handle('create-file', async (event, filePath) => {
+  return fs.promises.writeFile(filePath, '', 'utf-8')
+    .then(() => {
+      return { success: true, message: "File created successfully" };
+    })
+    .catch((error) => {
+      console.error("main - error creating file:", error);
+      return { success: false, message: error.message };
+    });
+});
+
+ipcMain.handle('write-txt', async (event, filePath, text) => {
+  return fs.promises.writeFile(filePath, text);
+});
+
+ipcMain.handle('delete-file', async (event, filePath) => {
+  return fs.promises.unlink(filePath);
+});
+
