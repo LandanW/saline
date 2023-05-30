@@ -1,29 +1,23 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import ReactQuill from 'react-quill';
-import { ipcRenderer } from 'electron';
 
 import 'react-quill/dist/quill.snow.css';
 
+
 export default function Editor({ file }) {
-  const [value, setValue] = useState('');
+  const quillRef = useRef(null); // Add this line
 
   useEffect(() => {
     if (file) {
-      ipcRenderer.send('read-rtf', file);
+      window.api.invoke('read-txt', file)
+        .then(text => {
+          const quill = quillRef.current.getEditor(); // Get the Quill instance
+          quill.setText(text); // Set the text
+        })
+        .catch(console.error);
     }
   }, [file]);
 
-  useEffect(() => {
-    ipcRenderer.on('rtf-content', (event, html) => {
-      setValue(html);
-    });
-
-    // Clean up the listener when the component unmounts
-    return () => {
-      ipcRenderer.removeAllListeners('rtf-content');
-    };
-  }, []);
-
-  return <ReactQuill theme="snow" value={value} onChange={setValue} />;
+  // Add the ref to the ReactQuill component
+  return <ReactQuill theme="snow" ref={quillRef} />;
 }

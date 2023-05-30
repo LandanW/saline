@@ -11,6 +11,7 @@ import { useState } from 'react';
 export default function Layout() {
 
   const [selectedFile, setSelectedFile] = useState(null);
+  const [path, setPath] = useState(''); 
 
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.primary.main,
@@ -52,7 +53,7 @@ export default function Layout() {
         <Item><Editor file={selectedFile} /></Item>
       </Grid>
       <Grid item xs className='grid'>
-        <Item><FileBrowser setSelectedFile={setSelectedFile} selectedFile={selectedFile} /></Item>
+      <Item><FileBrowser setSelectedFile={setSelectedFile} path={path} setPath={setPath} /></Item>
       </Grid>
     </Grid>
   );

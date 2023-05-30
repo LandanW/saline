@@ -65,12 +65,20 @@ ipcMain.handle('read-dir', (event, dirPath) => {
   return files;
 });
 
-ipcMain.on('read-rtf', (event, filePath) => {
-  fs.createReadStream(filePath).pipe(rtfToHTML((err, html) => {
-    if (err) {
-      console.error(err);
-    } else {
-      event.reply('rtf-content', html);
-    }
-  }));
+ipcMain.handle('read-rtf', async (event, filePath) => {
+  return new Promise((resolve, reject) => {
+    rtfToHTML.fromStream(fs.createReadStream(filePath), (err, html) => {
+      if (err) {
+        console.error("main - error reading file:", err);
+        reject(err);
+      } else {
+        console.log("main - read file content:", html);
+        resolve(html);
+      }
+    });
+  });
+});
+
+ipcMain.handle('read-txt', async (event, filePath) => {
+  return fs.promises.readFile(filePath, 'utf-8');
 });
