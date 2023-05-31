@@ -24,7 +24,12 @@ export const FileBrowser = ({ setSelectedFile, path, setPath }) => {
   }, [path]);
 
   const onBack = () => setPath(pathModule.dirname(path));
-  const onOpen = (folder) => setPath(pathModule.join(path, folder));
+  const onOpen = (folder) => {
+    const newPath = pathModule.join(path, folder);
+    console.log("New path: ", newPath);
+    setPath(newPath);
+  };
+  
   const onFileClick = (file) => {
     const extension = pathModule.extname(file);
     if (extension === '.txt') {
@@ -45,6 +50,20 @@ export const FileBrowser = ({ setSelectedFile, path, setPath }) => {
     });
   };
 
+  const onFileDelete = (file) => {
+    const filePath = pathModule.join(path, file.name);
+    window.api.invoke('delete-file', filePath).then((response) => {
+      if (response.success) {
+        // Refresh the file list after deletion
+        window.api.invoke('read-dir', path).then((newFiles) => {
+          setFiles([...newFiles]); // Create a new array
+        });
+      } else {
+        console.error("Error deleting file:", response.message);
+      }
+    });
+  };
+  
   const [searchString, setSearchString] = useState('');
   const filteredFiles = files.filter((s) => s.name.includes(searchString));
 
@@ -53,7 +72,13 @@ export const FileBrowser = ({ setSelectedFile, path, setPath }) => {
       <Typography variant="h6">{path}</Typography>
       <TextField placeholder="Search Files" onChange={(event) => setSearchString(event.target.value)} value={searchString} />
       <Button onClick={() => setOpenDialog(true)} variant="contained">Create New File</Button>
-      <FilesViewer files={filteredFiles} onBack={onBack} onOpen={onOpen} onFileClick={onFileClick} />
+      <FilesViewer 
+        files={filteredFiles}
+        currentDirectory={path}
+        onBack={onBack} 
+        onOpen={onOpen} 
+        onFileClick={onFileClick}
+        onFileDelete={onFileDelete} />
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Create New File</DialogTitle>
         <DialogContent>

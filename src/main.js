@@ -83,6 +83,10 @@ ipcMain.handle('read-txt', async (event, filePath) => {
   return fs.promises.readFile(filePath, 'utf-8');
 });
 
+ipcMain.handle('write-txt', async (event, filePath, text) => {
+  return fs.promises.writeFile(filePath, text);
+});
+
 ipcMain.handle('create-file', async (event, filePath) => {
   return fs.promises.writeFile(filePath, '', 'utf-8')
     .then(() => {
@@ -94,11 +98,8 @@ ipcMain.handle('create-file', async (event, filePath) => {
     });
 });
 
-ipcMain.handle('write-txt', async (event, filePath, text) => {
-  return fs.promises.writeFile(filePath, text);
-});
-
-ipcMain.handle('delete-file', async (event, filePath) => {
+ipcMain.handle('delete-file', async (event, currentDirectory, fileToDelete) => {
+  const filePath = path.join(currentDirectory, fileToDelete);
   return fs.promises.unlink(filePath);
 });
 

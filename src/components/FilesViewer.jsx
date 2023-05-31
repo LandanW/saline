@@ -1,70 +1,65 @@
-import React, { useState } from 'react';
-import { List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Button, Box, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { List, ListItem, ListItemText, Button, Box, IconButton } from '@mui/material';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteDialog from './DeleteDialog';
 
-export default function FilesViewer({ files, onBack, onOpen, onFileClick }) {
-  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+export default function FilesViewer({ files, onBack, onOpen, onFileClick, currentDirectory, onFileDelete }) {
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [fileToDelete, setFileToDelete] = useState(null);
+  const [deletedFile, setDeletedFile] = useState(null);
+
+  useEffect(() => {
+    if (deletedFile) {
+      // Refresh the files in the parent component here
+      // This will trigger a re-render of this component with the updated files
+      setDeletedFile(null); // Reset the deleted file state
+    }
+  }, [deletedFile]);
 
   const openDeleteDialog = (file) => {
     setFileToDelete(file);
-    setOpenConfirmDialog(true);
+    setDeleteDialogOpen(true);
   };
 
-  const closeDeleteDialog = () => {
-    setOpenConfirmDialog(false);
-  };
-
-  const confirmDelete = () => {
-    // invoke your Electron API to delete the file here
-    window.api.invoke('delete-file', fileToDelete);
-    setOpenConfirmDialog(false);
+  const handleFileDelete = () => {
+    window.api.invoke('delete-file', currentDirectory, fileToDelete)
+      .then(() => {
+        console.log('File deleted successfully');
+        setDeletedFile(fileToDelete); // Set the deleted file state to trigger a re-render
+        onFileDelete(fileToDelete);
+        setDeleteDialogOpen(false);
+      })
+      .catch(console.error);
   };
 
   return (
     <>
-      <Box display="flex" alignItems="center" justifyContent="flex-start">
-        <Button variant="contained" color="primary" startIcon={<ArrowUpwardIcon />} onClick={onBack} disableElevation>
-          ...
-        </Button>
-      </Box>
-      <List>
-        {files.map((file, index) => (
-          <ListItem key={index} button onClick={() => file.isDirectory ? onOpen(file.name) : onFileClick(file.name)}>
-            {file.isDirectory ? <FolderOpenIcon /> : <InsertDriveFileIcon />}
-            <ListItemText primary={file.name} />
-            {!file.isDirectory && (
-              <ListItemSecondaryAction>
+      <div>
+        <Box display="flex" alignItems="center" justifyContent="flex-start">
+          <Button variant="contained" color="primary" startIcon={<ArrowUpwardIcon />} onClick={onBack} disableElevation>
+            ...
+          </Button>
+        </Box>
+      </div>
+      <div>
+        <List>
+          {files.map((file, index) => (
+            <ListItem key={index} button onClick={() => file.isDirectory ? onOpen(file.name) : onFileClick(file.name)}>
+              {file.isDirectory ? <FolderOpenIcon /> : <InsertDriveFileIcon />}
+              <ListItemText primary={file.name} />
+              {!file.isDirectory && (
                 <IconButton edge="end" aria-label="delete" onClick={() => openDeleteDialog(file.name)}>
                   <DeleteIcon />
                 </IconButton>
-              </ListItemSecondaryAction>
-            )}
-          </ListItem>
-        ))}
-      </List>
-      <Dialog
-        open={openConfirmDialog}
-        onClose={closeDeleteDialog}
-      >
-        <DialogTitle>Delete File</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Are you sure you want to delete this file?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeDeleteDialog} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={confirmDelete} color="primary" autoFocus>
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
+              )}
+            </ListItem>
+          ))}
+        </List>
+      </div>
+      <DeleteDialog open={deleteDialogOpen} handleClose={() => setDeleteDialogOpen(false)} handleConfirm={handleFileDelete} />
     </>
   );
 }
