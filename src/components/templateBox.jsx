@@ -30,17 +30,13 @@ const Div = styled('div')(({ theme }) => ({
 }));
 
 export default function TemplateBox(props) {
-  const [open, setOpen] = React.useState(false);
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-
+  const handleEditOpen = () => {
+    console.log('edit open');
+    props.setTemplateName(props.template.name);
+    props.setShowEditDialog(true);
+    props.fetchTemplateEntries(props.template.id)
+  }
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -55,7 +51,7 @@ export default function TemplateBox(props) {
         <Div>{props.template.name}</Div>
         <Box sx={{display: 'flex', alignItems: 'center'}}>
           <Tooltip title="Edit">
-            <Button variant="outlined" color="secondary" onClick={handleClickOpen} sx={{ width: '10%', margin: '5px', height: '70%'}}>
+            <Button variant="outlined" color="secondary" onClick={handleEditOpen} sx={{ width: '10%', margin: '5px', height: '70%'}}>
               <EditIcon />
             </Button>
           </Tooltip>
@@ -67,87 +63,6 @@ export default function TemplateBox(props) {
         </Box>
         </Box>
       </Paper>
-      <Dialog open={open} onClose={handleClose} 
-        BackdropProps={{ sx: { backgroundColor: 'transparent' } }}
-        PaperProps={{ sx: { backgroundColor: 'primary.main',} }}
-        
-      >
-        <TextField
-          color='background'
-          margin="dense"
-          id="template-name"
-          label="Template Name"
-          fullWidth
-          variant="filled"
-          defaultValue={props.template.name}
-        />
-        <DialogContent>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '500px', alignItems: 'center' }}>
-          <TextField
-            color='background'
-            margin="dense"
-            id="keyword"
-            label="Keyword"
-            variant="filled"
-            sx={{ width: '100%' }}
-          />
-          <Tooltip title="Delete entry">
-            <Button variant="cstandard" color="danger" sx={{margin: '3px'}}>
-              <DeleteIcon color='danger'/>
-            </Button>
-          </Tooltip>
-          </Box>
-          <TextField
-            color='background'
-            margin="dense"
-            id="keyword"
-            label="Replace with"
-            fullWidth
-            variant="filled"
-            multiline
-          />
-          <Divider sx={{ margin: '10px' }} />
-          <Box sx={{
-            display: 'flex',
-            alignItems: 'center',
-          }}>
-            <FormControl 
-              variant='outlined'
-            >
-              <Select
-                id="entry-type"
-                color='primary'
-                defaultValue={"static"}
-                size='small'
-                displayEmpty
-                sx={{ 
-                  backgroundColor: 'primary.main',
-                }}
-                inputProps={{ 
-                  'aria-label': 'Without label',
-                  MenuProps: {
-                    MenuListProps: {
-                      sx: {backgroundColor: 'primary.main'} 
-                    }
-                  } 
-                }}
-              >
-                <MenuItem value={"static"}>Static</MenuItem>
-                <MenuItem value={"dynamic"}>Dynamic</MenuItem>
-                <MenuItem value={"date"}>Date</MenuItem>
-              </Select>
-            </FormControl>
-            <Tooltip title="Add a new entry">
-            <Button variant="contained" color='success' sx={{ margin: '10px' }}>Add</Button>
-            </Tooltip>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button color='secondary' onClick={handleClose}>Cancel</Button>
-          <Button color='danger' variant="contained" onClick={handleClose}>Delete</Button>
-          <Button color='secondary' variant="contained" onClick={handleClose}>Save</Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 }

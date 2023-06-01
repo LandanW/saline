@@ -68,7 +68,7 @@ const EditTemplateDialog = (props) => {
           <Box>
             {entries.map((entry, index) => (
               <div key={index}>
-                {entry.menuValue === 'static'  && <TemplateEntryStatic index={index} updateEntry={updateEntry} />}
+                {entry.menuValue === 'static'  && <TemplateEntryStatic index={index} updateEntry={updateEntry} keyword={entry.keyword} replacementText={entry.replacementText} />}
                 {entry.menuValue === 'dynamic' && <TemplateEntryDynamic />} 
                 {entry.menuValue === 'date' && <TemplateEntryDate />}
                 <Button onClick={() => deleteEntry(index)}>Delete</Button>

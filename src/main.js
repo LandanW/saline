@@ -172,20 +172,6 @@ ipcMain.handle('create-entry', async (event, templateId, menuValue, keyword, rep
 });
 
 
-ipcMain.handle('read-table', async (event, tableName) => {
-  return new Promise((resolve, reject) => {
-    db.all(`SELECT * FROM ${tableName}`, function(err, rows) {
-      if (err) {
-        console.error("main - error reading table:", err);
-        reject(err);
-      } else {
-        console.log("main - read table:", tableName);
-        resolve(rows);
-      }
-    });
-  });
-})
-
 ipcMain.handle('read-template-names', async (event) => {
   return new Promise((resolve, reject) => {
     db.all(`SELECT id, name FROM templates`, function(err, rows) {
@@ -200,46 +186,20 @@ ipcMain.handle('read-template-names', async (event) => {
   });
 });
 
-ipcMain.handle('write-table', async (event, tableName, name, content) => {
+ipcMain.handle('read-template-entries', async (event, templateId) => {
   return new Promise((resolve, reject) => {
-    db.run(`INSERT INTO ${tableName} (name, content) VALUES (?, ?)`, [name, content], function(err) {
+    db.all(`SELECT * FROM entries WHERE template_id = ?`, [templateId], function(err, rows) {
       if (err) {
-        console.error("main - error writing table:", err);
+        console.error("main - error reading entries:", err);
         reject(err);
       } else {
-        console.log("main - wrote table:", tableName);
-        resolve(this.lastID);
+        console.log("main - read entries for template id:", templateId);
+        resolve(rows);
       }
     });
   });
-})
+});
 
-ipcMain.handle('update-table', async (event, tableName, id, name, content) => {
-  return new Promise((resolve, reject) => {
-    db.run(`UPDATE ${tableName} SET name = ?, content = ? WHERE id = ?`, [name, content, id], function(err) {
-      if (err) {
-        console.error("main - error updating table:", err);
-        reject(err);
-      } else {
-        console.log("main - updated table:", tableName);
-        resolve(this.lastID);
-      }
-    });
-  });
-})
 
-ipcMain.handle('delete-table', async (event, tableName, id) => {
-  return new Promise((resolve, reject) => {
-    db.run(`DELETE FROM ${tableName} WHERE id = ?`, [id], function(err) {
-      if (err) {
-        console.error("main - error deleting table:", err);
-        reject(err);
-      } else {
-        console.log("main - deleted table:", tableName);
-        resolve(this.lastID);
-      }
-    });
-  });
-})
 
 

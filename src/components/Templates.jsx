@@ -22,8 +22,19 @@ export default function Templates () {
     });
   }, []);
 
-  const createTemplate = () => {
-    console.log('created template')
+  //fetches the asscoiated entries for a template
+  const fetchTemplateEntries = async (templateId) => {
+    if (templateId) {
+      try {
+        const entries = await window.api.invoke('read-template-entries', templateId);
+        setEntries(entries);
+      } catch (error) {
+        console.error('Failed to fetch entries for template:', error);
+      }
+    }
+  }
+
+  const openTemplateEditor = () => {
     setShowEditDialog(true)
   }
 
@@ -33,7 +44,6 @@ export default function Templates () {
         window.api.invoke('create-entry', templateId, entry.menuValue, entry.keyword, entry.replacementText);
       }
     });
-  
     setShowEditDialog(false)
     setMenuValue('static')
     setEntries([])
@@ -54,7 +64,7 @@ export default function Templates () {
             variant="contained"
             color="secondary"
             sx={{ width: '90%',alignSelf: 'center', margin: '10px' }}
-            onClick={createTemplate}
+            onClick={openTemplateEditor}
           >
           NEW TEMPLATE
           </Button>
@@ -73,7 +83,10 @@ export default function Templates () {
           {templateNamesList.map((template) => (
             <TemplateBox 
               template={template} 
-              key={template.id} 
+              key={template.id}
+              setTemplateName={setTemplateName}
+              setShowEditDialog={setShowEditDialog}
+              fetchTemplateEntries={fetchTemplateEntries}
             /> 
           ))}
         </Box>

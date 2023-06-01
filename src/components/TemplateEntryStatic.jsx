@@ -8,8 +8,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Divider from '@mui/material/Divider';
 
 const TemplateEntryStatic = (props) => {
-  const [keyword, setKeyword] = useState("");
-  const [replacementText, setReplacementText] = useState("");
+  const [keyword, setKeyword] = useState(props.keyword);
+  const [replacementText, setReplacementText] = useState(props.replacementText);
 
   const handleKeywordChange = (e) => {
     setKeyword(e.target.value);
@@ -31,6 +31,7 @@ const TemplateEntryStatic = (props) => {
           label="Keyword"
           variant="filled"
           sx={{ width: '100%' }}
+          defaultValue={keyword}
           value={keyword}
           onChange={handleKeywordChange}
         />
@@ -48,6 +49,7 @@ const TemplateEntryStatic = (props) => {
         fullWidth
         variant="filled"
         multiline
+        defaultValue={replacementText}
         value={replacementText}
         onChange={handleReplacementTextChange}
       />
