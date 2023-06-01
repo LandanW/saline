@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@electron/remote": "^2.0.9",
+    "@electron/rebuild": "^3.2.13",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@iarna/rtf-to-html": "^1.1.0",
@@ -19,6 +19,7 @@
     "react-dom": "^18.2.0",
     "react-quill": "^2.0.0",
     "react-scripts": "5.0.1",
+    "sqlite3": "^5.1.6",
     "wait-on": "^7.0.1",
     "web-vitals": "^2.1.4"
   },

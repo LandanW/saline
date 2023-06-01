@@ -18,7 +18,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 
 
-
 const Div = styled('div')(({ theme }) => ({
   ...theme.typography.button,
   backgroundColor: theme.palette.primary.main,
@@ -30,7 +29,7 @@ const Div = styled('div')(({ theme }) => ({
   flexGrow: 1,
 }));
 
-export default function TemplateBox() {
+export default function TemplateBox(props) {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -40,6 +39,8 @@ export default function TemplateBox() {
   const handleClose = () => {
     setOpen(false);
   };
+
+
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -51,7 +52,7 @@ export default function TemplateBox() {
           display: 'flex',
           justifyContent: 'flex-end'
         }}>
-        <Div>Template 1 long template name </Div>
+        <Div>{props.template.name}</Div>
         <Box sx={{display: 'flex', alignItems: 'center'}}>
           <Tooltip title="Edit">
             <Button variant="outlined" color="secondary" onClick={handleClickOpen} sx={{ width: '10%', margin: '5px', height: '70%'}}>
@@ -78,6 +79,7 @@ export default function TemplateBox() {
           label="Template Name"
           fullWidth
           variant="filled"
+          defaultValue={props.template.name}
         />
         <DialogContent>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '500px', alignItems: 'center' }}>
@@ -136,7 +138,7 @@ export default function TemplateBox() {
               </Select>
             </FormControl>
             <Tooltip title="Add a new entry">
-            <Button variant="contained" color="secondary" sx={{ margin: '10px' }}>Add</Button>
+            <Button variant="contained" color='success' sx={{ margin: '10px' }}>Add</Button>
             </Tooltip>
           </Box>
         </DialogContent>

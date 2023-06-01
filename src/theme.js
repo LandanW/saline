@@ -27,7 +27,10 @@ const theme = createTheme({
     },
     danger: {
       main: "#E07A5F"
-    }
+    },
+    success: {
+      main: "#81B29A"
+    },
   },
   components: {
     MuiTextField: {

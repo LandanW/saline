@@ -2,9 +2,8 @@ const { app, BrowserWindow } = require('electron')
 const fs = require('fs');
 const path = require('path');
 const rtfToHTML = require('@iarna/rtf-to-html');
+const sqlite3 = require('sqlite3');
 
-
-require('@electron/remote/main').initialize()
 
 // modify your existing createWindow() function
 const createWindow = () => {
@@ -65,6 +64,7 @@ ipcMain.handle('read-dir', (event, dirPath) => {
   return files;
 });
 
+//EDITOR
 ipcMain.handle('read-rtf', async (event, filePath) => {
   return new Promise((resolve, reject) => {
     rtfToHTML.fromStream(fs.createReadStream(filePath), (err, html) => {
@@ -102,4 +102,144 @@ ipcMain.handle('delete-file', async (event, currentDirectory, fileToDelete) => {
   const filePath = path.join(currentDirectory, fileToDelete);
   return fs.promises.unlink(filePath);
 });
+
+//DATABASE
+//connect to database
+const db = new sqlite3.Database('./database.db', (err) => {
+  if (err) {
+    console.error("main - error opening database:", err);
+  } else {
+    console.log("main - opened database");
+  }
+});
+
+// Create the templates table if it doesn't exist
+db.run(`CREATE TABLE IF NOT EXISTS templates (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL)`, function(err) {
+  if (err) {
+    console.error("main - error creating templates table:", err);
+  } else {
+    console.log("main - created or confirmed existence of templates table");
+  }
+});
+
+// Create the entries table if it doesn't exist
+db.run(`CREATE TABLE IF NOT EXISTS entries (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  template_id INTEGER,
+  menuValue TEXT NOT NULL,
+  keyword TEXT NOT NULL,
+  replacementText TEXT NOT NULL,
+  FOREIGN KEY(template_id) REFERENCES templates(id)
+)`, function(err) {
+  if (err) {
+    console.error("main - error creating entries table:", err);
+  } else {
+    console.log("main - created or confirmed existence of entries table");
+  }
+});
+
+
+ipcMain.handle('create-template', async (event, templateName) => {
+  return new Promise((resolve, reject) => {
+    let stmt = db.prepare("INSERT INTO templates (name) VALUES (?)");
+    stmt.run([templateName], function(err) {
+      if (err) {
+        console.error("main - error inserting template:", err);
+        reject(err);
+      } else {
+        console.log("main - inserted template:", this.lastID);
+        resolve(this.lastID);
+      }
+    });
+  });
+});
+
+ipcMain.handle('create-entry', async (event, templateId, menuValue, keyword, replacementText) => {
+  return new Promise((resolve, reject) => {
+    db.run(`INSERT INTO entries (template_id, menuValue, keyword, replacementText) VALUES (?, ?, ?, ?)`,
+      [templateId, menuValue, keyword, replacementText],
+      function(err) {
+        if (err) {
+          console.error("main - error creating entry:", err);
+          reject(err);
+        } else {
+          console.log("main - created entry for template:", templateId);
+          resolve(this.lastID);
+        }
+      }
+    );
+  });
+});
+
+
+ipcMain.handle('read-table', async (event, tableName) => {
+  return new Promise((resolve, reject) => {
+    db.all(`SELECT * FROM ${tableName}`, function(err, rows) {
+      if (err) {
+        console.error("main - error reading table:", err);
+        reject(err);
+      } else {
+        console.log("main - read table:", tableName);
+        resolve(rows);
+      }
+    });
+  });
+})
+
+ipcMain.handle('read-template-names', async (event) => {
+  return new Promise((resolve, reject) => {
+    db.all(`SELECT id, name FROM templates`, function(err, rows) {
+      if (err) {
+        console.error("main - error reading template names:", err);
+        reject(err);
+      } else {
+        console.log("main - read template names");
+        resolve(rows.map(row => ({ id: row.id, name: row.name })));
+      }
+    });
+  });
+});
+
+ipcMain.handle('write-table', async (event, tableName, name, content) => {
+  return new Promise((resolve, reject) => {
+    db.run(`INSERT INTO ${tableName} (name, content) VALUES (?, ?)`, [name, content], function(err) {
+      if (err) {
+        console.error("main - error writing table:", err);
+        reject(err);
+      } else {
+        console.log("main - wrote table:", tableName);
+        resolve(this.lastID);
+      }
+    });
+  });
+})
+
+ipcMain.handle('update-table', async (event, tableName, id, name, content) => {
+  return new Promise((resolve, reject) => {
+    db.run(`UPDATE ${tableName} SET name = ?, content = ? WHERE id = ?`, [name, content, id], function(err) {
+      if (err) {
+        console.error("main - error updating table:", err);
+        reject(err);
+      } else {
+        console.log("main - updated table:", tableName);
+        resolve(this.lastID);
+      }
+    });
+  });
+})
+
+ipcMain.handle('delete-table', async (event, tableName, id) => {
+  return new Promise((resolve, reject) => {
+    db.run(`DELETE FROM ${tableName} WHERE id = ?`, [id], function(err) {
+      if (err) {
+        console.error("main - error deleting table:", err);
+        reject(err);
+      } else {
+        console.log("main - deleted table:", tableName);
+        resolve(this.lastID);
+      }
+    });
+  });
+})
+
 
