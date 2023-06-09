@@ -14,6 +14,8 @@ export default function Templates () {
   const [entries, setEntries] = useState([]);
   const [templateName, setTemplateName] = useState(''); 
   const [templateNamesList, setTemplateNamesList] = useState([]);
+  const [templateId, setTemplateId] = useState(null);
+  const [deletedEntries, setDeletedEntries] = useState([]);
 
   //fetches all templates from the database
   useEffect(() => {
@@ -38,18 +40,79 @@ export default function Templates () {
     setShowEditDialog(true)
   }
 
+  const handleSave = () => {
+    if (templateId) {
+      updateTemplate();
+    } else {
+      saveTemplate();
+    }
+  }
+
   const saveTemplate = () => {
     window.api.invoke('create-template', templateName).then(templateId => {
       for (const entry of entries) {
         window.api.invoke('create-entry', templateId, entry.menuValue, entry.keyword, entry.replacementText);
       }
+      window.api.invoke('read-template-names').then(names => {
+        setTemplateNamesList(names);
+      });
+      fetchTemplateEntries(templateId);
     });
     setShowEditDialog(false)
     setMenuValue('static')
     setEntries([])
     setTemplateName('')
+    setTemplateId(null)
+  }
+
+  const updateTemplate = () => {
+    window.api.invoke('update-template-name', templateId, templateName).then(() => {
+      const deletePromises = deletedEntries.map(entryId => {
+        return window.api.invoke('delete-entry', entryId);
+      });
+  
+      Promise.all(deletePromises).then(() => {
+        const updatePromises = entries.map(entry => {
+          if (entry.id) {
+            return window.api.invoke('update-entry', entry.id, entry.menuValue, entry.keyword, entry.replacementText);
+          } else {
+            return window.api.invoke('create-entry', templateId, entry.menuValue, entry.keyword, entry.replacementText);
+          }
+        });
+    
+        Promise.all(updatePromises).then(() => {
+          window.api.invoke('read-template-names').then(names => {
+            setTemplateNamesList(names);
+          });
+    
+          fetchTemplateEntries(templateId);
+        });
+      });
+    });
+    setShowEditDialog(false)
+    setMenuValue('static')
+    setEntries([])
+    setTemplateName('')
+    setDeletedEntries([])
   }
   
+
+  const deleteTemplate = () => {
+    window.api.invoke('delete-template', templateId).then(() => {
+      window.api.invoke('delete-template-entries', templateId).then(() => {
+        window.api.invoke('read-template-names').then(names => {
+          setTemplateNamesList(names);
+        });
+      });
+    });
+    console.log(`deleted template: ${templateId}`);
+    setShowEditDialog(false)
+    setMenuValue('static')
+    setEntries([])
+    setTemplateName('')
+    setTemplateId(null)
+  }
+
   const closeEditDialog = () => {
     setShowEditDialog(false)
     setMenuValue('static')
@@ -71,13 +134,15 @@ export default function Templates () {
           <EditTemplateDialog 
             show={showEditDialog}
             close={closeEditDialog} 
-            save={saveTemplate} 
+            save={handleSave} 
             menuValue={menuValue} 
             setMenuValue={setMenuValue} 
             entries={entries} 
             setEntries={setEntries}
             templateName={templateName}
+            deleteTemplate={deleteTemplate}
             setTemplateName={setTemplateName}
+            setDeletedEntries={setDeletedEntries}
           />
           <Divider />
           {templateNamesList.map((template) => (
@@ -87,6 +152,7 @@ export default function Templates () {
               setTemplateName={setTemplateName}
               setShowEditDialog={setShowEditDialog}
               fetchTemplateEntries={fetchTemplateEntries}
+              setTemplateId={setTemplateId}
             /> 
           ))}
         </Box>

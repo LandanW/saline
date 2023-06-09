@@ -34,8 +34,9 @@ export default function TemplateBox(props) {
   const handleEditOpen = () => {
     console.log('edit open');
     props.setTemplateName(props.template.name);
-    props.setShowEditDialog(true);
     props.fetchTemplateEntries(props.template.id)
+    props.setTemplateId(props.template.id)
+    props.setShowEditDialog(true);
   }
 
   return (

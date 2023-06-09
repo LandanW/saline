@@ -36,7 +36,7 @@ const TemplateEntryStatic = (props) => {
           onChange={handleKeywordChange}
         />
         <Tooltip title="Delete entry">
-          <Button variant="cstandard" color="danger" sx={{margin: '3px'}}>
+          <Button variant="cstandard" color="danger" sx={{margin: '3px'}} onClick={() => props.deleteEntry(props.index)}>
             <DeleteIcon color='danger'/>
           </Button>
         </Tooltip>

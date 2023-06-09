@@ -44,7 +44,13 @@ const EditTemplateDialog = (props) => {
   }
 
   const deleteEntry = (indexToDelete) => {
-    setEntries(entries.filter((_, index) => index !== indexToDelete));
+    console.log(`delete entry: ${indexToDelete}`);
+  
+    // Before removing the entry from the entries state, add its ID to the deletedEntries state.
+    const deletedEntryId = entries[indexToDelete].id;
+    props.setDeletedEntries(prevDeletedEntries => [...prevDeletedEntries, deletedEntryId]);
+  
+    setEntries(prevEntries => prevEntries.filter((_, i) => i !== indexToDelete));
   }
 
   return (
@@ -68,10 +74,9 @@ const EditTemplateDialog = (props) => {
           <Box>
             {entries.map((entry, index) => (
               <div key={index}>
-                {entry.menuValue === 'static'  && <TemplateEntryStatic index={index} updateEntry={updateEntry} keyword={entry.keyword} replacementText={entry.replacementText} />}
+                {entry.menuValue === 'static'  && <TemplateEntryStatic index={index} updateEntry={updateEntry} keyword={entry.keyword} replacementText={entry.replacementText} deleteEntry={deleteEntry} />}
                 {entry.menuValue === 'dynamic' && <TemplateEntryDynamic />} 
                 {entry.menuValue === 'date' && <TemplateEntryDate />}
-                <Button onClick={() => deleteEntry(index)}>Delete</Button>
               </div>
             ))}
           </Box>
@@ -113,7 +118,7 @@ const EditTemplateDialog = (props) => {
         </DialogContent>
         <DialogActions>
           <Button color='secondary' onClick={props.close}>Cancel</Button>
-          <Button color='danger' variant="contained" onClick={props.close}>Delete</Button>
+          <Button color='danger' variant="contained" onClick={props.deleteTemplate}>Delete</Button>
           <Button color='secondary' variant="contained" onClick={props.save}>Save</Button>
         </DialogActions>
       </Dialog>

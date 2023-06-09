@@ -154,23 +154,34 @@ ipcMain.handle('create-template', async (event, templateName) => {
   });
 });
 
-ipcMain.handle('create-entry', async (event, templateId, menuValue, keyword, replacementText) => {
+//deletes the template and associated entries
+ipcMain.handle('delete-template', async (event, templateId) => {
   return new Promise((resolve, reject) => {
-    db.run(`INSERT INTO entries (template_id, menuValue, keyword, replacementText) VALUES (?, ?, ?, ?)`,
-      [templateId, menuValue, keyword, replacementText],
-      function(err) {
-        if (err) {
-          console.error("main - error creating entry:", err);
-          reject(err);
-        } else {
-          console.log("main - created entry for template:", templateId);
-          resolve(this.lastID);
-        }
+    db.run(`DELETE FROM templates WHERE id = ?`, [templateId], function(err) {
+      if (err) {
+        console.error("main - error deleting template:", err);
+        reject(err);
+      } else {
+        console.log("main - deleted template:", templateId);
+        resolve(templateId);
       }
-    );
+    });
   });
 });
 
+ipcMain.handle('update-template-name', async (event, templateId, templateName) => {
+  return new Promise((resolve, reject) => {
+    db.run(`UPDATE templates SET name = ? WHERE id = ?`, [templateName, templateId], function(err) {
+      if (err) {
+        console.error("main - error updating template name:", err);
+        reject(err);
+      } else {
+        console.log("main - updated template name:", templateId);
+        resolve(templateId);
+      }
+    });
+  });
+});
 
 ipcMain.handle('read-template-names', async (event) => {
   return new Promise((resolve, reject) => {
@@ -199,6 +210,69 @@ ipcMain.handle('read-template-entries', async (event, templateId) => {
     });
   });
 });
+
+ipcMain.handle('delete-template-entries', async (event, templateId) => {
+  return new Promise((resolve, reject) => {
+    db.run(`DELETE FROM entries WHERE template_id = ?`, [templateId], function(err) {
+      if (err) {
+        console.error("main - error deleting entries:", err);
+        reject(err);
+      } else {
+        console.log("main - deleted entries for template:", templateId);
+        resolve(templateId);
+      }
+    });
+  });
+});
+
+ipcMain.handle('create-entry', async (event, templateId, menuValue, keyword, replacementText) => {
+  return new Promise((resolve, reject) => {
+    db.run(`INSERT INTO entries (template_id, menuValue, keyword, replacementText) VALUES (?, ?, ?, ?)`,
+      [templateId, menuValue, keyword, replacementText],
+      function(err) {
+        if (err) {
+          console.error("main - error creating entry:", err);
+          reject(err);
+        } else {
+          console.log("main - created entry for template:", templateId);
+          resolve(this.lastID);
+        }
+      }
+    );
+  });
+});
+
+ipcMain.handle('update-entry', async (event, entryId, menuValue, keyword, replacementText) => {
+  return new Promise((resolve, reject) => {
+    db.run(`UPDATE entries SET menuValue = ?, keyword = ?, replacementText = ? WHERE id = ?`,
+      [menuValue, keyword, replacementText, entryId],
+      function(err) {
+        if (err) {
+          console.error("main - error updating entry:", err);
+          reject(err);
+        } else {
+          console.log("main - updated entry:", entryId);
+          resolve(entryId);
+        }
+      }
+    );
+  });
+});
+
+ipcMain.handle('delete-entry', async (event, entryId) => {
+  return new Promise((resolve, reject) => {
+    db.run(`DELETE FROM entries WHERE id = ?`, [entryId], function(err) {
+      if (err) {
+        console.error("main - error deleting entry:", err);
+        reject(err);
+      } else {
+        console.log("main - deleted entry:", entryId);
+        resolve(entryId);
+      }
+    });
+  });
+});
+
 
 
 
