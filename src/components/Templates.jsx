@@ -36,7 +36,11 @@ export default function Templates () {
     }
   }
 
-  const openTemplateEditor = () => {
+  const handleNewTemplate = () => {
+    setMenuValue('static')
+    setEntries([])
+    setTemplateName('')
+    setTemplateId(null)
     setShowEditDialog(true)
   }
 
@@ -127,7 +131,7 @@ export default function Templates () {
             variant="contained"
             color="secondary"
             sx={{ width: '90%',alignSelf: 'center', margin: '10px' }}
-            onClick={openTemplateEditor}
+            onClick={handleNewTemplate}
           >
           NEW TEMPLATE
           </Button>
