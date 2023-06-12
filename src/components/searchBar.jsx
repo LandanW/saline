@@ -1,9 +1,9 @@
 import { TextField } from '@mui/material';
 
-
-const SearchBar = () => (
+const SearchBar = ({ searchTemplates }) => (
   <TextField
         placeholder="Search Templates"
+        onChange={searchTemplates}
       />
 );
 

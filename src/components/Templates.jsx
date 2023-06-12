@@ -16,6 +16,7 @@ export default function Templates () {
   const [templateNamesList, setTemplateNamesList] = useState([]);
   const [templateId, setTemplateId] = useState(null);
   const [deletedEntries, setDeletedEntries] = useState([]);
+  const [filteredTemplates, setFilteredTemplates] = useState(templateNamesList);
 
   //fetches all templates from the database
   useEffect(() => {
@@ -124,9 +125,20 @@ export default function Templates () {
     setTemplateName('')
   }
 
+  
+  
+  const searchTemplates = (event) => {
+    const searchValue = event.target.value.toLowerCase();
+    const newFilteredTemplates = templateNamesList.filter(template => {
+      return template.name.toLowerCase().includes(searchValue);
+    });
+    setFilteredTemplates(newFilteredTemplates);
+  }
+
+
   return (
         <Box sx={{ overflow: 'auto' }}>
-          <SearchBar />
+          <SearchBar searchTemplates={searchTemplates}/>
           <Button
             variant="contained"
             color="secondary"
@@ -149,7 +161,7 @@ export default function Templates () {
             setDeletedEntries={setDeletedEntries}
           />
           <Divider />
-          {templateNamesList.map((template) => (
+          {filteredTemplates.map((template) => (
             <TemplateBox 
               template={template} 
               key={template.id}
