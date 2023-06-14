@@ -8,7 +8,7 @@ import SearchBar from './SearchBar';
 import TemplateBox from './TemplateBox';
 import EditTemplateDialog from './EditTemplateDialog';
 
-export default function Templates () {
+export default function Templates ({ quillRef }) {
   const [showEditDialog, setShowEditDialog] = React.useState(false)
   const [menuValue, setMenuValue] = useState('static');
   const [entries, setEntries] = useState([]);
@@ -22,6 +22,7 @@ export default function Templates () {
   useEffect(() => {
     window.api.invoke('read-template-names').then(names => {
       setTemplateNamesList(names);
+      setFilteredTemplates(names);
     });
   }, []);
 
@@ -60,14 +61,11 @@ export default function Templates () {
       }
       window.api.invoke('read-template-names').then(names => {
         setTemplateNamesList(names);
+        setFilteredTemplates(names);
       });
       fetchTemplateEntries(templateId);
     });
-    setShowEditDialog(false)
-    setMenuValue('static')
-    setEntries([])
-    setTemplateName('')
-    setTemplateId(null)
+    closeEditDialog();
   }
 
   const updateTemplate = () => {
@@ -88,17 +86,14 @@ export default function Templates () {
         Promise.all(updatePromises).then(() => {
           window.api.invoke('read-template-names').then(names => {
             setTemplateNamesList(names);
+            setFilteredTemplates(names);
           });
     
           fetchTemplateEntries(templateId);
         });
       });
     });
-    setShowEditDialog(false)
-    setMenuValue('static')
-    setEntries([])
-    setTemplateName('')
-    setDeletedEntries([])
+    closeEditDialog();
   }
   
 
@@ -107,15 +102,12 @@ export default function Templates () {
       window.api.invoke('delete-template-entries', templateId).then(() => {
         window.api.invoke('read-template-names').then(names => {
           setTemplateNamesList(names);
+          setFilteredTemplates(names);
         });
       });
     });
     console.log(`deleted template: ${templateId}`);
-    setShowEditDialog(false)
-    setMenuValue('static')
-    setEntries([])
-    setTemplateName('')
-    setTemplateId(null)
+    closeEditDialog();
   }
 
   const closeEditDialog = () => {
@@ -123,9 +115,8 @@ export default function Templates () {
     setMenuValue('static')
     setEntries([])
     setTemplateName('')
+    setTemplateId(null)
   }
-
-  
   
   const searchTemplates = (event) => {
     const searchValue = event.target.value.toLowerCase();
@@ -169,6 +160,7 @@ export default function Templates () {
               setShowEditDialog={setShowEditDialog}
               fetchTemplateEntries={fetchTemplateEntries}
               setTemplateId={setTemplateId}
+              quillRef={quillRef}
             /> 
           ))}
         </Box>

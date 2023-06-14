@@ -65,10 +65,10 @@ const EditTemplateDialog = (props) => {
           margin="dense"
           id="template-name"
           label="Template Name"
-          fullWidth
           variant="filled"
           defaultValue={templateName}
           onChange={(e) => setTemplateName(e.target.value)}
+          sx={{ width: '98%', alignSelf: 'center' }}
         />
         <DialogContent>
           <Box>

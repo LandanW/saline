@@ -6,15 +6,7 @@ import { styled } from '@mui/material/styles';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import EditIcon from '@mui/icons-material/Edit';
 import Tooltip from '@mui/material/Tooltip';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import Divider from '@mui/material/Divider';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import DeleteIcon from '@mui/icons-material/Delete';
+import replaceTextInQuill from '../utils/findAndReplace';
 
 
 
@@ -30,7 +22,6 @@ const Div = styled('div')(({ theme }) => ({
 }));
 
 export default function TemplateBox(props) {
-
   const handleEditOpen = () => {
     console.log('edit open');
     props.setTemplateName(props.template.name);
@@ -38,6 +29,15 @@ export default function TemplateBox(props) {
     props.setTemplateId(props.template.id)
     props.setShowEditDialog(true);
   }
+
+  const applyTemplate = async () => {
+    const entries = await window.api.invoke('read-template-entries', props.template.id);
+    console.log(`applied template ${props.template.name}`);
+    const quill = props.quillRef.current.getEditor();
+    entries.forEach(entry => {
+      replaceTextInQuill(quill, entry.keyword, entry.replacementText);
+    });
+  };
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -57,7 +57,7 @@ export default function TemplateBox(props) {
             </Button>
           </Tooltip>
           <Tooltip title="Appy Template">
-            <Button variant="contained" color="secondary" sx={{ width: '10%', margin: '5px', height: '70%' }}>
+            <Button variant="contained" color="secondary" onClick={applyTemplate} sx={{ width: '10%', margin: '5px', height: '70%' }}>
               <ArrowForwardIosIcon />
             </Button>
           </Tooltip>

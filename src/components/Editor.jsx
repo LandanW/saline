@@ -4,8 +4,7 @@ import { Button } from '@mui/material';
 import 'react-quill/dist/quill.snow.css';
 
 
-export default function Editor({ file }) {
-  const quillRef = useRef(null);
+export default function Editor({ quillRef, file }) {
 
   useEffect(() => {
     if (file) {
