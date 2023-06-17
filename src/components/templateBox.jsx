@@ -7,6 +7,8 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import EditIcon from '@mui/icons-material/Edit';
 import Tooltip from '@mui/material/Tooltip';
 import replaceTextInQuill from '../utils/findAndReplace';
+import { useDispatch } from 'react-redux';
+import { showEditDialog } from '../redux/actions';
 
 
 
@@ -22,18 +24,22 @@ const Div = styled('div')(({ theme }) => ({
 }));
 
 export default function TemplateBox(props) {
+  const dispatch = useDispatch();
+
   const handleEditOpen = () => {
     console.log('edit open');
     props.setTemplateName(props.template.name);
     props.fetchTemplateEntries(props.template.id)
     props.setTemplateId(props.template.id)
-    props.setShowEditDialog(true);
+    dispatch(showEditDialog(true));
   }
-
+  
   const applyTemplate = async () => {
+    const quill = props.quillRef.current.getEditor();
+    // Capture the current content before applying the template
+    console.log('pre template content', props.preTemplateContent)
     const entries = await window.api.invoke('read-template-entries', props.template.id);
     console.log(`applied template ${props.template.name}`);
-    const quill = props.quillRef.current.getEditor();
     entries.forEach(entry => {
       replaceTextInQuill(quill, entry.keyword, entry.replacementText);
     });

@@ -7,11 +7,14 @@ import theme from './theme';
 import Editor from './components/Editor.jsx';
 import Templates from './components/Templates.jsx';
 import { FileBrowser } from './components/FileBrowser.jsx';
+import { Provider } from 'react-redux';
+import store from './redux/store';
 
 export default function App() {
-  const quillRef = useRef(null);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [path, setPath] = useState(''); 
+  //const quillRef = useRef(null);
+  //const [path, setPath] = useState(''); 
+  //const [templateApplied, setTemplateApplied] = useState(false);
+  //const [preTemplateContent, setPreTemplateContent] = useState('');
 
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.primary.main,
@@ -22,8 +25,8 @@ export default function App() {
     flexGrow: 1,
     flexDirection: 'column',
     minHeight: '95vh',
-    maxHeight: '95vh', // add this to prevent the Item from growing in height
-    maxWidth: '100%', // add this to prevent the Item from growing in width
+    maxHeight: '95vh', 
+    maxWidth: '100%', 
     display: 'flex',
     margin: '5px',
     overflow: 'auto',
@@ -46,19 +49,25 @@ export default function App() {
 
   return (
     <div className="app">
+      <Provider store={store}>
       <ThemeProvider theme={theme}>
         <Grid container className='grid'>
           <Grid item xs>
-            <Item><Templates quillRef={quillRef} /></Item>
+            <Item>
+              <Templates/>
+            </Item>
           </Grid>
           <Grid item xs={6} className='grid'>
-            <Item><Editor quillRef={quillRef} file={selectedFile} /></Item>
+            <Item>
+              <Editor/>
+            </Item>
           </Grid>
           <Grid item xs className='grid'>
-            <Item><FileBrowser setSelectedFile={setSelectedFile} path={path} setPath={setPath} /></Item>
+            <Item><FileBrowser/></Item>
           </Grid>
         </Grid>
       </ThemeProvider>
+      </Provider>
     </div>
   );
 }

@@ -11,7 +11,7 @@ export default function replaceTextInQuill(quill, searchStr, replaceStr) {
   });
 
   // Clear the Quill editor
-  quill.setContents([]);
+  quill.setContents(delta);
 
   // Insert the updated delta back into the Quill editor
   quill.updateContents(delta);

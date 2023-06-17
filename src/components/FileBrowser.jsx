@@ -2,8 +2,12 @@ import React, { useState, useEffect } from 'react';
 import pathModule from 'path';
 import FilesViewer from './FilesViewer.jsx';
 import { TextField, Typography, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { useDispatch } from 'react-redux';
+import { selectedFile } from '../redux/actions.js';
 
-export const FileBrowser = ({ setSelectedFile, path, setPath }) => {
+export const FileBrowser = () => {
+  const dispatch = useDispatch();
+  const [path, setPath] = useState(''); // path to the current directory
   const [files, setFiles] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [newFileName, setNewFileName] = useState('');
@@ -33,7 +37,8 @@ export const FileBrowser = ({ setSelectedFile, path, setPath }) => {
   const onFileClick = (file) => {
     const extension = pathModule.extname(file);
     if (extension === '.txt') {
-      setSelectedFile(pathModule.join(path, file));
+      //setSelectedFile(pathModule.join(path, file));
+      dispatch(selectedFile(pathModule.join(path, file)));
     }
   };
 
@@ -41,7 +46,6 @@ export const FileBrowser = ({ setSelectedFile, path, setPath }) => {
     const newFilePath = pathModule.join(path, newFileName + '.txt'); // assuming that you want to create a txt file
     window.api.invoke('create-file', newFilePath).then((response) => {
       if (response.success) {
-        // Maybe add a logic to refresh the file list
         setNewFileName('');
         setOpenDialog(false);
       } else {

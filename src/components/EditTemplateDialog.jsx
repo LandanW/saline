@@ -1,5 +1,5 @@
 import * as React from 'react';
-
+import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import { Button } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
@@ -7,24 +7,31 @@ import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import Divider from '@mui/material/Divider';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import DeleteIcon from '@mui/icons-material/Delete';
 import TemplateEntryStatic from './TemplateEntryStatic';
 import TemplateEntryDynamic from './TemplateEntryDynamic';
 import TemplateEntryDate from './TemplateEntryDate';
+import { useSelector, useDispatch } from 'react-redux';
+import { showEditDialog, entries } from '../redux/actions';
+
+
 
 const EditTemplateDialog = (props) => {
-
-  const menuValue = props.menuValue
-  const setMenuValue = props.setMenuValue
-  const entries = props.entries
-  const setEntries = props.setEntries
+  const dispatch = useDispatch();
   const templateName = props.templateName
   const setTemplateName = props.setTemplateName
+  const entryDataRedux = useSelector(state => state.entries);
+  const [entryData, setEntryData] = useState(entryDataRedux); //local state
 
+  useEffect(() => {
+    setEntryData(entryDataRedux);  // Keep local state in sync with Redux state
+  }, [entryDataRedux]);
+
+  const showDialog = useSelector(state => state.showEditDialog);
+  const [menuValue, setMenuValue] = useState('static'); //local state
+  
   const handleSelectChange = (event) => {
     setMenuValue(event.target.value);
   };
@@ -33,29 +40,32 @@ const EditTemplateDialog = (props) => {
   const newEntry = () => {
     console.log(`new entry: ${menuValue}`);
     const newEntryData = { menuValue, keyword: "", replacementText: "" };
-    setEntries([...entries, newEntryData]);
+    setEntryData([...entryData, newEntryData]);
     setMenuValue('static');
   }
 
   const updateEntry = (index, newData) => {
-    const updatedEntries = [...entries];
+    const updatedEntries = [...entryData];  // Use local state
     updatedEntries[index] = { ...updatedEntries[index], ...newData };
-    setEntries(updatedEntries);
+    setEntryData(updatedEntries);  // Update local state
+    dispatch(entries(updatedEntries));  // Update Redux state
   }
 
   const deleteEntry = (indexToDelete) => {
-    console.log(`delete entry: ${indexToDelete}`);
-  
     // Before removing the entry from the entries state, add its ID to the deletedEntries state.
-    const deletedEntryId = entries[indexToDelete].id;
+    const deletedEntryId = entryData[indexToDelete].id;
     props.setDeletedEntries(prevDeletedEntries => [...prevDeletedEntries, deletedEntryId]);
-  
-    setEntries(prevEntries => prevEntries.filter((_, i) => i !== indexToDelete));
+    //if it is a newTemplate is true then just remove the entry from the redux state
+    if (props.newTemplate) {
+      dispatch(entries(entryData.filter((_, i) => i !== indexToDelete)));
+    }
+    const updatedEntries = entryData.filter((_, i) => i !== indexToDelete);
+    setEntryData(updatedEntries);
   }
 
   return (
     <>
-      <Dialog onClose={props.close} open={props.show} fullWidth
+      <Dialog onClose={() => dispatch(showEditDialog(false))} open={showDialog} fullWidth
         BackdropProps={{ sx: { backgroundColor: 'transparent' } }}
         PaperProps={{ sx: { backgroundColor: 'primary.main',} }}
         
@@ -72,7 +82,7 @@ const EditTemplateDialog = (props) => {
         />
         <DialogContent>
           <Box>
-            {entries.map((entry, index) => (
+            {entryData.map((entry, index) => (
               <div key={index}>
                 {entry.menuValue === 'static'  && <TemplateEntryStatic index={index} updateEntry={updateEntry} keyword={entry.keyword} replacementText={entry.replacementText} deleteEntry={deleteEntry} />}
                 {entry.menuValue === 'dynamic' && <TemplateEntryDynamic />} 
@@ -117,7 +127,7 @@ const EditTemplateDialog = (props) => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button color='secondary' onClick={props.close}>Cancel</Button>
+          <Button color='secondary' onClick={() => dispatch(showEditDialog(false))}>Cancel</Button>
           <Button color='danger' variant="contained" onClick={props.deleteTemplate}>Delete</Button>
           <Button color='secondary' variant="contained" onClick={props.save}>Save</Button>
         </DialogActions>
