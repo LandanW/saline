@@ -7,7 +7,8 @@ import {
   DELETED_ENTRIES,
   FILTERED_TEMPLATES,
   SELECTED_FILE,
-  QUILL_DATA,
+  QUILL_DELTA,
+  ORIGINAL_QUILL_DELTA,
   TEMPLATE_APPLIED,
 } from './actions';
 
@@ -20,7 +21,7 @@ const initialState = {
   entries: [],
   deletedEntries: [],
   selectedFile: '',
-  quillData: null,
+  quillDelta: null,
   templateApplied: '',
 };
 
@@ -66,10 +67,15 @@ const rootReducer = (state = initialState, action) => {
         ...state,
         selectedFile: action.payload,
       };
-    case QUILL_DATA:
+    case QUILL_DELTA:
       return {
         ...state,
-        quillData: action.payload,
+        quillDelta: action.payload,
+      };
+    case ORIGINAL_QUILL_DELTA:
+      return {
+        ...state,
+        originalQuillDelta: action.payload,
       };
     case TEMPLATE_APPLIED:
       return {

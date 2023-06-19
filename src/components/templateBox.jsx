@@ -6,9 +6,9 @@ import { styled } from '@mui/material/styles';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import EditIcon from '@mui/icons-material/Edit';
 import Tooltip from '@mui/material/Tooltip';
-import replaceTextInQuill from '../utils/findAndReplace';
-import { useDispatch } from 'react-redux';
-import { showEditDialog } from '../redux/actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { showEditDialog, quillDelta, originalQuillDelta} from '../redux/actions';
+import { type } from '@testing-library/user-event/dist/type';
 
 
 
@@ -25,6 +25,8 @@ const Div = styled('div')(({ theme }) => ({
 
 export default function TemplateBox(props) {
   const dispatch = useDispatch();
+  const quillDeltaData = useSelector(state => state.quillDelta);
+  const parsedQuillDelta = JSON.parse(quillDeltaData);
 
   const handleEditOpen = () => {
     console.log('edit open');
@@ -35,14 +37,20 @@ export default function TemplateBox(props) {
   }
   
   const applyTemplate = async () => {
-    const quill = props.quillRef.current.getEditor();
-    // Capture the current content before applying the template
-    console.log('pre template content', props.preTemplateContent)
+
+    // Save the current state of the editor before applying the template
+    dispatch(originalQuillDelta(quillDeltaData));
+
     const entries = await window.api.invoke('read-template-entries', props.template.id);
     console.log(`applied template ${props.template.name}`);
     entries.forEach(entry => {
-      replaceTextInQuill(quill, entry.keyword, entry.replacementText);
+      parsedQuillDelta.ops.forEach(op => {
+        if (typeof op.insert === 'string') {
+          op.insert = op.insert.replace(entry.keyword, entry.replacementText);
+        }
+      });
     });
+    dispatch(quillDelta(JSON.stringify(parsedQuillDelta)));
   };
 
   return (

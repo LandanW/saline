@@ -6,7 +6,8 @@ export const ENTRIES = 'SET_ENTRIES';
 export const DELETED_ENTRIES = 'SET_DELETED_ENTRIES';
 export const FILTERED_TEMPLATES = 'SET_FILTERED_TEMPLATES';
 export const SELECTED_FILE = 'SELECTED_FILE';
-export const QUILL_DATA = 'QUILL_DATA';
+export const QUILL_DELTA = 'QUILL_DELTA';
+export const ORIGINAL_QUILL_DELTA = 'ORIGINAL_QUILL_DELTA';
 export const TEMPLATE_APPLIED = 'TEMPLATE_APPLIED';
 
 export const showEditDialog = (showEditDialog) => ({
@@ -49,9 +50,14 @@ export const selectedFile = (selectedFile) => ({
   payload: selectedFile,
 });
 
-export const quillData = (quillData) => ({
-  type: QUILL_DATA,
+export const quillDelta = (quillData) => ({
+  type: QUILL_DELTA,
   payload: quillData,
+});
+
+export const originalQuillDelta = (originalQuillDelta) => ({
+  type: ORIGINAL_QUILL_DELTA,
+  payload: originalQuillDelta,
 });
 
 export const templateApplied = (templateApplied) => ({
