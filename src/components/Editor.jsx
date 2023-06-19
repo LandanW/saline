@@ -1,29 +1,44 @@
-import React, { useEffect, useCallback, useRef } from 'react';
+import React, { useEffect, useCallback, useRef, useState } from 'react';
+import path from 'path';
 import ReactQuill from 'react-quill';
 import { useSelector, useDispatch } from 'react-redux';
-import { quillDelta, originalQuillDelta } from '../redux/actions';
-import { Button } from '@mui/material';
+import { quillDelta } from '../redux/actions';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material';
 import 'react-quill/dist/quill.snow.css';
 
 export default function Editor() {
   const quillRef = useRef(null);
+  const [open, setOpen] = useState(false);
+  const [fileName, setFileName] = useState('');
 
   const dispatch = useDispatch();
   const file = useSelector(state => state.selectedFile);
   const quillDeltaData = useSelector(state => state.quillDelta);
   const originalQuillDeltaData = useSelector(state => state.originalQuillDelta);
 
+  // Check if the data is defined and is a valid JSON string
+  const isJSON = (str) => {
+    try {
+      JSON.parse(str);
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
+
   // Parse the JSON strings
-  const parsedQuillDeltaData = JSON.parse(quillDeltaData);
-  const parsedOriginalQuillDeltaData = JSON.parse(originalQuillDeltaData);
+  const parsedQuillDeltaData = isJSON(quillDeltaData) ? JSON.parse(quillDeltaData) : null;
+  const parsedOriginalQuillDeltaData = isJSON(originalQuillDeltaData) ? JSON.parse(originalQuillDeltaData) : null;
 
   // Check if the quillDeltaData has changed
-  const hasQuillDeltaChanged = JSON.stringify(parsedQuillDeltaData.ops) !== JSON.stringify(parsedOriginalQuillDeltaData.ops);
+  const hasQuillDeltaChanged = parsedQuillDeltaData && parsedQuillDeltaData.ops && parsedOriginalQuillDeltaData && parsedOriginalQuillDeltaData.ops 
+  ? JSON.stringify(parsedQuillDeltaData.ops) !== JSON.stringify(parsedOriginalQuillDeltaData.ops)
+  : false;
+
 
   useEffect(() => {
     const quill = quillRef.current.getEditor();
     quill.setContents(parsedQuillDeltaData);
-    console.log(` quillDeltaData: ${quillDeltaData}`);
   }, [quillDeltaData]);
 
   //sets the quill file to the selected file from the redux store
@@ -39,11 +54,19 @@ export default function Editor() {
     };
   }, [file]);
   
-  const handleSave = () => {
+  
+  const handleSave = (fileName) => {
     console.log('handleSave called');
     const quill = quillRef.current.getEditor();
     const text = quill.getText();
-    window.api.invoke('write-txt', file, text)
+  
+    // Get the directory of the current file
+    const directoryPath = path.dirname(file);
+  
+    // Join the directory path with the new filename to get the full file path
+    const fullPath = path.join(directoryPath, fileName);
+  
+    window.api.invoke('write-txt', fullPath, text)
       .then(() => {
         console.log('File saved');
         dispatch(quillDelta(JSON.stringify(quill.getContents())));
@@ -52,24 +75,62 @@ export default function Editor() {
   }
 
   const handleCancel = () => {
-    console.log('handleCancel called');
-
-    // Reset the quillDelta to the originalQuillDelta
     dispatch(quillDelta(originalQuillDeltaData));
+  }
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleSaveAs = () => {
+    handleSave(fileName);
+    setOpen(false);
+  }
+
+  const handleFileNameChange = (event) => {
+    setFileName(event.target.value);
   }
   
   return (
     <div style={{ position: 'relative', height: '100%' }}>
       <ReactQuill theme="snow" ref={quillRef} style={{ height: 'calc(100% - 48px)' }}/>
-      <Button variant="contained" color="primary" onClick={handleSave} style={{ position: 'absolute', right: '10px', bottom: '10px' }}>
-        Save File
+      <Button variant="contained" color="primary" onClick={handleClickOpen} style={{ position: 'absolute', right: '10px', bottom: '10px' }}>
+        Save As
       </Button>
       {hasQuillDeltaChanged && 
-        <Button variant="contained" color="primary" onClick={handleCancel} style={{ position: 'absolute', right: '80px', bottom: '10px' }}>
+        <Button variant="contained" color="primary" onClick={handleCancel} style={{ position: 'absolute', right: '120px', bottom: '10px' }}>
           Cancel
         </Button>
       }
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Save As</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Enter a filename for the new file:
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Filename"
+            type="text"
+            fullWidth
+            onChange={handleFileNameChange}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button onClick={handleSaveAs}>
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
-

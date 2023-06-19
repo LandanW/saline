@@ -8,7 +8,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import Tooltip from '@mui/material/Tooltip';
 import { useDispatch, useSelector } from 'react-redux';
 import { showEditDialog, quillDelta, originalQuillDelta} from '../redux/actions';
-import { type } from '@testing-library/user-event/dist/type';
 
 
 
@@ -37,21 +36,23 @@ export default function TemplateBox(props) {
   }
   
   const applyTemplate = async () => {
-
     // Save the current state of the editor before applying the template
     dispatch(originalQuillDelta(quillDeltaData));
 
-    const entries = await window.api.invoke('read-template-entries', props.template.id);
-    console.log(`applied template ${props.template.name}`);
-    entries.forEach(entry => {
-      parsedQuillDelta.ops.forEach(op => {
-        if (typeof op.insert === 'string') {
-          op.insert = op.insert.replace(entry.keyword, entry.replacementText);
+      const entries = await window.api.invoke('read-template-entries', props.template.id);
+      console.log(`applied template ${props.template.name}`);
+      entries.forEach(entry => {
+        // Check if parsedQuillDelta is not null and has the ops property
+        if (parsedQuillDelta && parsedQuillDelta.ops) {
+          parsedQuillDelta.ops.forEach(op => {
+            if (typeof op.insert === 'string') {
+              op.insert = op.insert.replace(entry.keyword, entry.replacementText);
+            }
+          });
         }
       });
-    });
-    dispatch(quillDelta(JSON.stringify(parsedQuillDelta)));
-  };
+      dispatch(quillDelta(JSON.stringify(parsedQuillDelta)));
+    };
 
   return (
     <Box sx={{ display: 'flex' }}>
