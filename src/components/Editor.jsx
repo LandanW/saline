@@ -54,7 +54,8 @@ export default function Editor() {
   const handleCancel = () => {
     console.log('handleCancel called');
 
-    dispatch(quillDelta(JSON.stringify(originalQuillDeltaData)));
+    // Reset the quillDelta to the originalQuillDelta
+    dispatch(quillDelta(originalQuillDeltaData));
   }
   
   return (
