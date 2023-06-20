@@ -8,6 +8,12 @@ import EditIcon from '@mui/icons-material/Edit';
 import Tooltip from '@mui/material/Tooltip';
 import { useDispatch, useSelector } from 'react-redux';
 import { showEditDialog, quillDelta, originalQuillDelta} from '../redux/actions';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
+import TextField from '@mui/material/TextField';
 
 
 
@@ -27,6 +33,31 @@ export default function TemplateBox(props) {
   const quillDeltaData = useSelector(state => state.quillDelta);
   const parsedQuillDelta = JSON.parse(quillDeltaData);
 
+  const [open, setOpen] = React.useState(false);
+  const [dynamicReplacementText, setDynamicReplacementText] = React.useState({});
+  const [localEntries, setLocalEntries] = React.useState(null);
+  const [dynamicReplacements, setDynamicReplacements] = React.useState({});
+  const [dynamicEntries, setDynamicEntries] = React.useState([]);
+  const [currentDynamicEntry, setCurrentDynamicEntry] = React.useState(null);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  
+  const handleClose = () => {
+    setOpen(false);
+    setDynamicReplacements(prevReplacements => {
+      const newReplacements = {
+        ...prevReplacements,
+        ...dynamicReplacementText,
+      };
+      handleApplyTemplateWithDynamicValue(localEntries, newReplacements);
+      return newReplacements;
+    });
+    setDynamicReplacementText({});
+  };
+  
+  
   const handleEditOpen = () => {
     console.log('edit open');
     props.setTemplateName(props.template.name);
@@ -34,32 +65,63 @@ export default function TemplateBox(props) {
     props.setTemplateId(props.template.id)
     dispatch(showEditDialog(true));
   }
-  
-  const applyTemplate = async () => {
-    // Save the current state of the editor before applying the template
-    dispatch(originalQuillDelta(quillDeltaData));
 
-      const entries = await window.api.invoke('read-template-entries', props.template.id);
-      console.log(`applied template ${props.template.name}`);
-      entries.forEach(entry => {
-        // Check if parsedQuillDelta is not null and has the ops property
-        if (parsedQuillDelta && parsedQuillDelta.ops) {
-          parsedQuillDelta.ops.forEach(op => {
-            if (typeof op.insert === 'string') {
+  const handleApplyTemplateWithDynamicValue = (entries, replacements) => {
+    if (parsedQuillDelta && parsedQuillDelta.ops) {
+      parsedQuillDelta.ops.forEach(op => {
+        if (typeof op.insert === 'string') {
+          entries.forEach(entry => {
+            const replacementText = entry.menuValue === 'dynamic' ? replacements[entry.id] : entry.replacementText;
+            op.insert = op.insert.replace(entry.keyword, replacementText);
+          });
+        }
+      });
+    }
+    dispatch(quillDelta(JSON.stringify(parsedQuillDelta)));
+  };
+
+  const handleApplyTemplateWithStaticValue = (entries) => {
+    if (parsedQuillDelta && parsedQuillDelta.ops) {
+      parsedQuillDelta.ops.forEach(op => {
+        if (typeof op.insert === 'string') {
+          entries.forEach(entry => {
+            if (entry.menuValue !== 'dynamic') {
               op.insert = op.insert.replace(entry.keyword, entry.replacementText);
             }
           });
         }
       });
-      dispatch(quillDelta(JSON.stringify(parsedQuillDelta)));
-    };
-
-  return (
+    }
+    dispatch(quillDelta(JSON.stringify(parsedQuillDelta)));
+  };
+  
+  const applyTemplate = async () => {
+    // Save the current state of the editor before applying the template
+    dispatch(originalQuillDelta(quillDeltaData));
+  
+    const entries = await window.api.invoke('read-template-entries', props.template.id);
+    const dynamicEntries = entries.filter(entry => entry.menuValue === 'dynamic');
+  
+    console.log(`applied template ${props.template.name}`);
+  
+    if (dynamicEntries.length > 0) {
+      setLocalEntries(entries);
+      setDynamicEntries(dynamicEntries);
+      setCurrentDynamicEntry(dynamicEntries[0]);
+      handleClickOpen();
+    } else {
+      handleApplyTemplateWithStaticValue(entries);
+    }
+  }
+  
+    
+    return (
+      <>
     <Box sx={{ display: 'flex' }}>
       <Paper 
         elevation={4}
         sx={{ width: '90%',alignSelf: 'center', margin: '10px', backgroundColor: 'primary.main' }}
-      >
+        >
         <Box sx={{
           display: 'flex',
           justifyContent: 'flex-end'
@@ -80,5 +142,38 @@ export default function TemplateBox(props) {
         </Box>
       </Paper>
     </Box>
+    <Dialog open={open} onClose={handleClose}>
+      <DialogTitle>{"Input Replacement Text"}</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Please enter the replacement text for dynamic entries.
+        </DialogContentText>
+        {dynamicEntries.map((entry) => (
+          <TextField
+            key={entry.id}
+            autoFocus
+            margin="dense"
+            id={entry.id}
+            label={entry.keyword}
+            type="text"
+            fullWidth
+            variant="standard"
+            onChange={(event) => setDynamicReplacementText({
+              ...dynamicReplacementText,
+              [entry.id]: event.target.value,
+            })}
+          />
+        ))}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose} color="primary">
+          Cancel
+        </Button>
+        <Button onClick={handleClose} color="primary">
+          Ok
+        </Button>
+      </DialogActions>
+    </Dialog>
+    </>
   );
 }

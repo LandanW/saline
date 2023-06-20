@@ -73,7 +73,12 @@ export default function Templates () {
   const saveTemplate = () => {
     window.api.invoke('create-template', templateName).then(templateId => {
       for (const entry of entyData) {
-        window.api.invoke('create-entry', templateId, entry.menuValue, entry.keyword, entry.replacementText);
+        if (entry.menuValue === 'static' ) {
+          window.api.invoke('create-entry', templateId, entry.menuValue, entry.keyword, entry.replacementText);
+        }
+        if (entry.menuValue === 'dynamic' ) {
+          window.api.invoke('create-entry', templateId, entry.menuValue, entry.keyword, ''); // no replacement text for dynamic entries
+        }
       }
       window.api.invoke('read-template-names').then(names => {
         dispatch(templateArray(names));
