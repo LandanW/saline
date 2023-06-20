@@ -71,8 +71,14 @@ export default function TemplateBox(props) {
       parsedQuillDelta.ops.forEach(op => {
         if (typeof op.insert === 'string') {
           entries.forEach(entry => {
-            const replacementText = entry.menuValue === 'dynamic' ? replacements[entry.id] : entry.replacementText;
-            op.insert = op.insert.replace(entry.keyword, replacementText);
+            if (entry.menuValue === 'date') {
+              const currentDate = new Date();
+              const dateString = currentDate.toISOString().split('T')[0]; // format: 'yyyy-mm-dd'
+              op.insert = op.insert.replace(entry.keyword, dateString);
+            } else {
+              const replacementText = entry.menuValue === 'dynamic' ? replacements[entry.id] : entry.replacementText;
+              op.insert = op.insert.replace(entry.keyword, replacementText);
+            }
           });
         }
       });
@@ -85,7 +91,11 @@ export default function TemplateBox(props) {
       parsedQuillDelta.ops.forEach(op => {
         if (typeof op.insert === 'string') {
           entries.forEach(entry => {
-            if (entry.menuValue !== 'dynamic') {
+            if (entry.menuValue === 'date') {
+              const currentDate = new Date();
+              const dateString = currentDate.toISOString().split('T')[0]; // format: 'yyyy-mm-dd'
+              op.insert = op.insert.replace(entry.keyword, dateString);
+            } else if (entry.menuValue !== 'dynamic') {
               op.insert = op.insert.replace(entry.keyword, entry.replacementText);
             }
           });

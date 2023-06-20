@@ -86,7 +86,7 @@ const EditTemplateDialog = (props) => {
               <div key={index}>
                 {entry.menuValue === 'static'  && <TemplateEntryStatic index={index} updateEntry={updateEntry} keyword={entry.keyword} replacementText={entry.replacementText} deleteEntry={deleteEntry} />}
                 {entry.menuValue === 'dynamic' && <TemplateEntryDynamic index={index} updateEntry={updateEntry} keyword={entry.keyword} deleteEntry={deleteEntry}/>} 
-                {entry.menuValue === 'date' && <TemplateEntryDate />}
+                {entry.menuValue === 'date' && <TemplateEntryDate index={index} updateEntry={updateEntry} keyword={entry.keyword} deleteEntry={deleteEntry}/>}
               </div>
             ))}
           </Box>
