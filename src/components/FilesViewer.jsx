@@ -16,6 +16,7 @@ export default function FilesViewer({ files, onBack, onOpen, onFileClick, curren
       // Refresh the files in the parent component here
       // This will trigger a re-render of this component with the updated files
       setDeletedFile(null); // Reset the deleted file state
+      setDeleteDialogOpen(false); // Close the delete dialog
     }
   }, [deletedFile]);
 
@@ -30,7 +31,6 @@ export default function FilesViewer({ files, onBack, onOpen, onFileClick, curren
         console.log('File deleted successfully');
         setDeletedFile(fileToDelete); // Set the deleted file state to trigger a re-render
         onFileDelete(fileToDelete);
-        setDeleteDialogOpen(false);
       })
       .catch(console.error);
   };

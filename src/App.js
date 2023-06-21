@@ -11,10 +11,6 @@ import { Provider } from 'react-redux';
 import store from './redux/store';
 
 export default function App() {
-  //const quillRef = useRef(null);
-  //const [path, setPath] = useState(''); 
-  //const [templateApplied, setTemplateApplied] = useState(false);
-  //const [preTemplateContent, setPreTemplateContent] = useState('');
 
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.primary.main,

@@ -96,21 +96,18 @@ export default function Editor() {
   }
   
   return (
-    <div style={{ position: 'relative', height: '100%' }}>
-      <ReactQuill theme="snow" ref={quillRef} style={{ height: 'calc(100% - 48px)' }}/>
-      
-      {/* Wrap the buttons in a div with styling */}
-      <div style={{ position: 'absolute', right: '10px', bottom: '10px' }}>
-        <Button variant="contained" color="secondary" onClick={handleClickOpen}>
-          Save As
-        </Button>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <ReactQuill theme="snow" ref={quillRef} style={{ flexGrow: 1 }}/>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', padding: '10px' }}>
         {hasQuillDeltaChanged && 
-          <Button variant="contained" color="primary" onClick={handleCancel} style={{ marginLeft: '10px' }}>
+          <Button variant="contained" color="primary" onClick={handleCancel}>
             Undo
           </Button>
         }
+        <Button variant="contained" color="secondary" onClick={handleClickOpen}>
+          Save As
+        </Button>
       </div>
-  
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Save As</DialogTitle>
         <DialogContent>

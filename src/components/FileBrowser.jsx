@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import pathModule from 'path';
 import FilesViewer from './FilesViewer.jsx';
-import { TextField, Typography, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { TextField, Divider, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { selectedFile } from '../redux/actions.js';
 
@@ -73,8 +73,21 @@ export const FileBrowser = () => {
 
   return (
     <div>
-      <TextField placeholder="Search Files" onChange={(event) => setSearchString(event.target.value)} value={searchString} />
-      <Button variant='contained' color='secondary'onClick={() => setOpenDialog(true)} >Create New File</Button>
+      <TextField 
+        placeholder="Search Files" 
+        value={searchString} 
+        onChange={(event) => setSearchString(event.target.value)} 
+        sx={{ width: '95%', alignSelf: 'center', margin: '5px' }}
+        />
+      <Button 
+        variant='contained'
+        color='secondary'
+        sx={{ width: '95%',alignSelf: 'center', margin: '5px' }}
+        onClick={() => setOpenDialog(true)}
+        >
+          New File
+        </Button>
+        <Divider sx={{ width: '95%', alignSelf: 'center', margin: '5px' }} />
       <FilesViewer 
         files={filteredFiles}
         currentDirectory={path}

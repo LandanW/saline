@@ -1,8 +1,0 @@
-test 2 yeeeeeeeehawww
-some more boilerplate 
-
-{address}
-{phone_number}
-{company_name}
-
-footer or something

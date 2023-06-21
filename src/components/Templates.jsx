@@ -140,38 +140,39 @@ export default function Templates () {
 
 
   return (
-        <Box sx={{ overflow: 'auto' }}>
-          <TextField
-          placeholder="Search Templates"
-          onChange={searchTemplates}
-        />
-          <Button
-            variant="contained"
-            color="secondary"
-            sx={{ width: '90%',alignSelf: 'center', margin: '10px' }}
-            onClick={handleNewTemplate}
-          >
-          NEW TEMPLATE
-          </Button>
-          <EditTemplateDialog 
-            close={closeEditDialog} 
-            save={handleSave} 
-            templateName={templateName}
-            deleteTemplate={deleteTemplate}
-            setTemplateName={setTemplateName}
-            setDeletedEntries={setDeletedEntries}
-            newTemplate={newTemplate}
-          />
-          <Divider />
-          {filteredTemplates.map((template) => (
-            <TemplateBox 
-              template={template} 
-              key={template.id}
-              setTemplateName={setTemplateName}
-              fetchTemplateEntries={fetchTemplateEntries}
-              setTemplateId={setTemplateId}
-            /> 
-          ))}
-        </Box>
+    <Box sx={{ overflow: 'auto' }}>
+      <TextField
+      placeholder="Search Templates"
+      onChange={searchTemplates}
+      sx={{ width: '95%', alignSelf: 'center', margin: '5px' }}
+    />
+      <Button
+        variant="contained"
+        color="secondary"
+        sx={{ width: '95%',alignSelf: 'center', margin: '5px' }}
+        onClick={handleNewTemplate}
+      >
+        NEW TEMPLATE
+      </Button>
+      <EditTemplateDialog 
+        close={closeEditDialog} 
+        save={handleSave} 
+        templateName={templateName}
+        deleteTemplate={deleteTemplate}
+        setTemplateName={setTemplateName}
+        setDeletedEntries={setDeletedEntries}
+        newTemplate={newTemplate}
+      />
+      <Divider sx={{ width: '95%', alignSelf: 'center', margin: '5px' }} />
+      {filteredTemplates.map((template) => (
+        <TemplateBox 
+          template={template} 
+          key={template.id}
+          setTemplateName={setTemplateName}
+          fetchTemplateEntries={fetchTemplateEntries}
+          setTemplateId={setTemplateId}
+        /> 
+      ))}
+    </Box>
   )
 }
