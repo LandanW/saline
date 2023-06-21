@@ -66,8 +66,6 @@ const EditTemplateDialog = (props) => {
   return (
     <>
       <Dialog onClose={() => dispatch(showEditDialog(false))} open={showDialog} fullWidth
-        BackdropProps={{ sx: { backgroundColor: 'transparent' } }}
-        PaperProps={{ sx: { backgroundColor: 'primary.main',} }}
         
       >
         <TextField

@@ -73,9 +73,8 @@ export const FileBrowser = () => {
 
   return (
     <div>
-      <Typography variant="h6">{path}</Typography>
       <TextField placeholder="Search Files" onChange={(event) => setSearchString(event.target.value)} value={searchString} />
-      <Button onClick={() => setOpenDialog(true)} variant="contained">Create New File</Button>
+      <Button variant='contained' color='secondary'onClick={() => setOpenDialog(true)} >Create New File</Button>
       <FilesViewer 
         files={filteredFiles}
         currentDirectory={path}
@@ -91,18 +90,20 @@ export const FileBrowser = () => {
           </DialogContentText>
           <TextField
             autoFocus
+            color='background'
             margin="dense"
             id="filename"
             label="Filename"
             type="text"
             fullWidth
+            variant='filled'
             value={newFileName}
             onChange={(e) => setNewFileName(e.target.value)}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
-          <Button onClick={onNewFile}>Create</Button>
+          <Button color='secondary' onClick={() => setOpenDialog(false)}>Cancel</Button>
+          <Button color='secondary' variant='contained'onClick={onNewFile}>Create</Button>
         </DialogActions>
       </Dialog>
     </div>

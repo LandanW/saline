@@ -162,12 +162,13 @@ export default function TemplateBox(props) {
           <TextField
             key={entry.id}
             autoFocus
+            color='background'
             margin="dense"
             id={entry.id}
             label={entry.keyword}
             type="text"
             fullWidth
-            variant="standard"
+            variant='filled'
             onChange={(event) => setDynamicReplacementText({
               ...dynamicReplacementText,
               [entry.id]: event.target.value,
@@ -176,11 +177,11 @@ export default function TemplateBox(props) {
         ))}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} color="primary">
+        <Button onClick={handleClose} color="secondary">
           Cancel
         </Button>
-        <Button onClick={handleClose} color="primary">
-          Ok
+        <Button onClick={handleClose} color="secondary" variant='contained'>
+          Apply
         </Button>
       </DialogActions>
     </Dialog>

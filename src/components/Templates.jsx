@@ -2,8 +2,7 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
-import { Button } from '@mui/material';
-import SearchBar from './SearchBar';
+import { Button, TextField} from '@mui/material';
 import TemplateBox from './TemplateBox';
 import EditTemplateDialog from './EditTemplateDialog';
 import { useSelector, useDispatch } from 'react-redux';
@@ -142,7 +141,10 @@ export default function Templates () {
 
   return (
         <Box sx={{ overflow: 'auto' }}>
-          <SearchBar searchTemplates={searchTemplates}/>
+          <TextField
+          placeholder="Search Templates"
+          onChange={searchTemplates}
+        />
           <Button
             variant="contained"
             color="secondary"

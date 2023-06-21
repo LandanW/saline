@@ -98,14 +98,19 @@ export default function Editor() {
   return (
     <div style={{ position: 'relative', height: '100%' }}>
       <ReactQuill theme="snow" ref={quillRef} style={{ height: 'calc(100% - 48px)' }}/>
-      <Button variant="contained" color="primary" onClick={handleClickOpen} style={{ position: 'absolute', right: '10px', bottom: '10px' }}>
-        Save As
-      </Button>
-      {hasQuillDeltaChanged && 
-        <Button variant="contained" color="primary" onClick={handleCancel} style={{ position: 'absolute', right: '120px', bottom: '10px' }}>
-          Cancel
+      
+      {/* Wrap the buttons in a div with styling */}
+      <div style={{ position: 'absolute', right: '10px', bottom: '10px' }}>
+        <Button variant="contained" color="secondary" onClick={handleClickOpen}>
+          Save As
         </Button>
-      }
+        {hasQuillDeltaChanged && 
+          <Button variant="contained" color="primary" onClick={handleCancel} style={{ marginLeft: '10px' }}>
+            Undo
+          </Button>
+        }
+      </div>
+  
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Save As</DialogTitle>
         <DialogContent>
@@ -114,19 +119,21 @@ export default function Editor() {
           </DialogContentText>
           <TextField
             autoFocus
+            color='background'
             margin="dense"
             id="name"
             label="Filename"
             type="text"
+            variant='filled'
             fullWidth
             onChange={handleFileNameChange}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>
+          <Button onClick={handleClose} color='secondary'>
             Cancel
           </Button>
-          <Button onClick={handleSaveAs}>
+          <Button onClick={handleSaveAs} color='secondary' variant="contained">
             Save
           </Button>
         </DialogActions>

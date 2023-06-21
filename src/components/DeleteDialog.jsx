@@ -15,10 +15,10 @@ const DeleteDialog = ({ open, handleClose, handleConfirm }) => (
       </DialogContentText>
     </DialogContent>
     <DialogActions>
-      <Button onClick={handleClose} color="primary">
+      <Button onClick={handleClose} color="secondary">
         Cancel
       </Button>
-      <Button onClick={handleConfirm} color="primary" autoFocus>
+      <Button onClick={handleConfirm} color="danger" variant="contained" autoFocus>
         Delete
       </Button>
     </DialogActions>

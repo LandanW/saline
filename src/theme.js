@@ -1,11 +1,9 @@
 import {createTheme } from "@mui/material/styles";
 
-
 const theme = createTheme({
   palette: {
     background: {
       default: "#3d405b"
-      
     },
     primary: {
       main: "#f4f1de",
@@ -44,10 +42,10 @@ const theme = createTheme({
               borderWidth: 3,
             },
             '&:hover fieldset': {
-              borderColor: "#0a9396",
+              borderColor: "#595D85",
             },
             '&.Mui-focused fieldset': {
-              borderColor: '#595D85',
+              borderColor: '#262738',
               borderWidth: 3,
             },
             '& .MuiInputBase-input': {
@@ -58,6 +56,13 @@ const theme = createTheme({
               color: '#3d405b', //needs checked should be placeholder text color
             },
           },
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: { 
+          backgroundColor: '#f4f1de',
         },
       },
     },
