@@ -126,65 +126,69 @@ export default function TemplateBox(props) {
   
     
     return (
-      <>
-    <Box sx={{ display: 'flex' }}>
-      <Paper 
-        elevation={4}
-        sx={{ width: '90%',alignSelf: 'center', margin: '10px', backgroundColor: 'primary.main' }}
-        >
-        <Box sx={{
-          display: 'flex',
-          justifyContent: 'flex-end'
-        }}>
-        <Div>{props.template.name}</Div>
-        <Box sx={{display: 'flex', alignItems: 'center'}}>
-          <Tooltip title="Edit">
-            <Button variant="outlined" color="secondary" onClick={handleEditOpen} sx={{ width: '10%', margin: '5px', height: '70%'}}>
-              <EditIcon />
-            </Button>
-          </Tooltip>
-          <Tooltip title="Appy Template">
-            <Button variant="contained" color="secondary" onClick={applyTemplate} sx={{ width: '10%', margin: '5px', height: '70%' }}>
-              <ArrowForwardIosIcon />
-            </Button>
-          </Tooltip>
-        </Box>
-        </Box>
-      </Paper>
-    </Box>
-    <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>{"Input Replacement Text"}</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          Please enter the replacement text for dynamic entries.
-        </DialogContentText>
-        {dynamicEntries.map((entry) => (
-          <TextField
-            key={entry.id}
-            autoFocus
-            color='background'
-            margin="dense"
-            id={entry.id}
-            label={entry.keyword}
-            type="text"
-            fullWidth
-            variant='filled'
-            onChange={(event) => setDynamicReplacementText({
-              ...dynamicReplacementText,
-              [entry.id]: event.target.value,
-            })}
-          />
-        ))}
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose} color="secondary">
-          Cancel
-        </Button>
-        <Button onClick={handleClose} color="secondary" variant='contained'>
-          Apply
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <>
+      <Box sx={{ display: 'flex', width:'100%' }}>
+        <Paper 
+          elevation={4}
+          sx={{ 
+            width: '95%',
+            margin: '10px', 
+            backgroundColor: 'primary.main' 
+          }}
+          >
+          <Box sx={{
+            display: 'flex',
+            justifyContent: 'flex-end'
+          }}>
+          <Div>{props.template.name}</Div>
+          <Box sx={{display: 'flex', alignItems: 'center'}}>
+            <Tooltip title="Edit">
+              <Button variant="outlined" color="secondary" onClick={handleEditOpen} sx={{ width: '10%', margin: '5px', height: '70%'}}>
+                <EditIcon />
+              </Button>
+            </Tooltip>
+            <Tooltip title="Appy Template">
+              <Button variant="contained" color="secondary" onClick={applyTemplate} sx={{ width: '10%', margin: '5px', height: '70%' }}>
+                <ArrowForwardIosIcon />
+              </Button>
+            </Tooltip>
+          </Box>
+          </Box>
+        </Paper>
+      </Box>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>{"Input Replacement Text"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Please enter the replacement text for dynamic entries.
+          </DialogContentText>
+          {dynamicEntries.map((entry) => (
+            <TextField
+              key={entry.id}
+              autoFocus
+              color='background'
+              margin="dense"
+              id={entry.id}
+              label={entry.keyword}
+              type="text"
+              fullWidth
+              variant='filled'
+              onChange={(event) => setDynamicReplacementText({
+                ...dynamicReplacementText,
+                [entry.id]: event.target.value,
+              })}
+            />
+          ))}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleClose} color="secondary" variant='contained'>
+            Apply
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

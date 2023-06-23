@@ -164,15 +164,21 @@ export default function Templates () {
         newTemplate={newTemplate}
       />
       <Divider sx={{ width: '95%', alignSelf: 'center', margin: '5px' }} />
-      {filteredTemplates.map((template) => (
-        <TemplateBox 
-          template={template} 
-          key={template.id}
-          setTemplateName={setTemplateName}
-          fetchTemplateEntries={fetchTemplateEntries}
-          setTemplateId={setTemplateId}
-        /> 
-      ))}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        flexWrap: 'wrap',
+      }}>
+        {filteredTemplates.map((template) => (
+          <TemplateBox 
+            template={template} 
+            key={template.id}
+            setTemplateName={setTemplateName}
+            fetchTemplateEntries={fetchTemplateEntries}
+            setTemplateId={setTemplateId}
+          /> 
+        ))}
+      </div>
     </Box>
   )
 }
