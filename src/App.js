@@ -48,7 +48,7 @@ export default function App() {
       <Provider store={store}>
       <ThemeProvider theme={theme}>
         <Grid container className='grid'>
-          <Grid item xs>
+          <Grid item xs={3}>
             <Item>
               <Templates/>
             </Item>
@@ -58,7 +58,7 @@ export default function App() {
               <Editor/>
             </Item>
           </Grid>
-          <Grid item xs className='grid'>
+          <Grid item xs={3} className='grid'>
             <Item><FileBrowser/></Item>
           </Grid>
         </Grid>

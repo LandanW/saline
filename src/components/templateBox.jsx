@@ -131,8 +131,8 @@ export default function TemplateBox(props) {
         <Paper 
           elevation={4}
           sx={{ 
-            width: '95%',
-            margin: '10px', 
+            width: '99%',
+            margin: '2px', 
             backgroundColor: 'primary.main' 
           }}
           >

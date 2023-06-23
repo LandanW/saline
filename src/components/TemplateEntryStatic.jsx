@@ -23,20 +23,20 @@ const TemplateEntryStatic = (props) => {
 
   return (
     <>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '500px', alignItems: 'center' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <TextField
           color='background'
           margin="dense"
           id="keyword"
           label="Keyword"
           variant="filled"
-          sx={{ width: '100%' }}
+          sx={{ width: '100%',  margin: '0px' }}
           defaultValue={keyword}
           value={keyword}
           onChange={handleKeywordChange}
         />
         <Tooltip title="Delete entry">
-          <Button variant="cstandard" color="danger" sx={{margin: '3px'}} onClick={() => props.deleteEntry(props.index)}>
+          <Button variant="cstandard" color="danger" sx={{height: '55px', margin:'5px' }} onClick={() => props.deleteEntry(props.index)}>
             <DeleteIcon color='danger'/>
           </Button>
         </Tooltip>
@@ -53,7 +53,7 @@ const TemplateEntryStatic = (props) => {
         value={replacementText}
         onChange={handleReplacementTextChange}
       />
-      <Divider sx={{ margin: '5px' }} />
+      <Divider sx={{margin: '3px'}}/>
     </>
   )
 }
