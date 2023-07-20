@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const rtfToHTML = require('@iarna/rtf-to-html');
 const sqlite3 = require('sqlite3');
+const mkdirp = require('mkdirp');
+const fsExtra = require('fs-extra');
 
 
 // modify your existing createWindow() function
@@ -98,10 +100,52 @@ ipcMain.handle('create-file', async (event, filePath) => {
     });
 });
 
-ipcMain.handle('delete-file', async (event, currentDirectory, fileToDelete) => {
-  const filePath = path.join(currentDirectory, fileToDelete);
-  return fs.promises.unlink(filePath);
+ipcMain.handle('delete-file', async (event, filePath) => {
+  try {
+    await fs.promises.unlink(filePath);
+    return { success: true, message: "File deleted successfully" };
+  } catch (error) {
+    console.error("main - error deleting file:", error);
+    return { success: false, message: error.message };
+  }
 });
+
+
+ipcMain.handle('create-directory', async (event, dirPath) => {
+  return fs.promises.mkdir(dirPath, { recursive: true })
+    .then(() => {
+      return { success: true, message: "Directory created successfully" };
+    })
+    .catch((error) => {
+      console.error("main - error creating directory:", error);
+      return { success: false, message: error.message };
+    });
+});
+
+ipcMain.handle('delete-directory', async (event, currentDirectory, directoryToDelete) => {
+  console.log("delete-directory - currentDirectory:", currentDirectory);
+  console.log("delete-directory - directoryToDelete:", directoryToDelete);
+  
+  // Add a condition to check if directoryToDelete is defined
+  if (!directoryToDelete) {
+    console.error("main - error deleting directory: directoryToDelete is undefined");
+    return { success: false, message: "directoryToDelete is undefined" };
+  }
+
+  const dirPath = path.join(currentDirectory, directoryToDelete);
+  return fsExtra.remove(dirPath)
+    .then(() => {
+      return { success: true, message: "Directory deleted successfully" };
+    })
+    .catch((error) => {
+      console.error("main - error deleting directory:", error);
+      return { success: false, message: error.message };
+    });
+});
+
+
+
+
 
 //DATABASE
 //connect to database

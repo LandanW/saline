@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import pathModule from 'path';
 import FilesViewer from './FilesViewer.jsx';
-import { TextField, Divider, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { TextField, Divider, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Box } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { selectedFile } from '../redux/actions.js';
 
@@ -11,6 +11,8 @@ export const FileBrowser = () => {
   const [files, setFiles] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [newFileName, setNewFileName] = useState('');
+  const [newDirectoryName, setNewDirectoryName] = useState('');
+  const [openDirectoryDialog, setOpenDirectoryDialog] = useState(false);
 
   useEffect(() => {
     window.api.invoke('get-app-path').then((appPath) => {
@@ -48,22 +50,52 @@ export const FileBrowser = () => {
       if (response.success) {
         setNewFileName('');
         setOpenDialog(false);
+        // Refresh the file list after creation
+        window.api.invoke('read-dir', path).then((newFiles) => {
+          setFiles([...newFiles]); // Create a new array
+        });
       } else {
         console.error("Error creating file:", response.message);
       }
     });
   };
 
-  const onFileDelete = (file) => {
-    const filePath = pathModule.join(path, file.name);
-    window.api.invoke('delete-file', filePath).then((response) => {
+  const onFileDelete = (fileName) => {
+    const filePath = pathModule.join(path, fileName);
+    window.api.invoke('delete-file', filePath)
+      .then((response) => {
+        if (response.success) {
+          window.api.invoke('read-dir', path).then(setFiles);
+        } else {
+          console.error("Error deleting file:", response.message);
+        }
+      });
+  };  
+
+  const onDirectoryDelete = (directoryName) => {
+      window.api.invoke('delete-directory', path, directoryName).then((response) => {
+        if (response.success) {
+          window.api.invoke('read-dir', path).then(setFiles);
+          if (directoryName === pathModule.basename(path)) {
+            setPath(pathModule.dirname(path));  // Update the current directory only if deleted item was a directory and it was the current directory
+          }
+        } else {
+          console.error("Error deleting directory:", response.message);
+        }
+      });
+  };
+  
+  const onNewDirectory = () => {
+    const newDirectoryPath = pathModule.join(path, newDirectoryName); 
+    window.api.invoke('create-directory', newDirectoryPath).then((response) => {
       if (response.success) {
-        // Refresh the file list after deletion
+        setNewDirectoryName('');
+        setOpenDirectoryDialog(false);
         window.api.invoke('read-dir', path).then((newFiles) => {
-          setFiles([...newFiles]); // Create a new array
+          setFiles([...newFiles]); // Refresh the file list after creation
         });
       } else {
-        console.error("Error deleting file:", response.message);
+        console.error("Error creating directory:", response.message);
       }
     });
   };
@@ -79,14 +111,28 @@ export const FileBrowser = () => {
         onChange={(event) => setSearchString(event.target.value)} 
         sx={{ width: '95%', alignSelf: 'center', margin: '5px' }}
         />
-      <Button 
-        variant='contained'
-        color='secondary'
-        sx={{ width: '95%',alignSelf: 'center', margin: '5px' }}
-        onClick={() => setOpenDialog(true)}
+      <Box 
+        display="flex" 
+        justifyContent="space-between" 
+        sx={{ width: '95%', alignSelf: 'center', margin: '5px' }}
+      >
+        <Button 
+          variant='contained'
+          color='secondary'
+          sx={{ width: '49%' }}
+          onClick={() => setOpenDialog(true)}
         >
           New File
         </Button>
+        <Button 
+          variant='contained'
+          color='secondary'
+          sx={{ width: '49%' }}
+          onClick={() => setOpenDirectoryDialog(true)}
+        >
+          New Directory
+        </Button>
+      </Box>
         <Divider sx={{ width: '95%', alignSelf: 'center', margin: '5px' }} />
       <FilesViewer 
         files={filteredFiles}
@@ -94,7 +140,10 @@ export const FileBrowser = () => {
         onBack={onBack} 
         onOpen={onOpen} 
         onFileClick={onFileClick}
-        onFileDelete={onFileDelete} />
+        onFileDelete={onFileDelete}
+        onDirectoryDelete={onDirectoryDelete}
+        setFiles={setFiles}
+      />
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Create New File</DialogTitle>
         <DialogContent>
@@ -119,6 +168,31 @@ export const FileBrowser = () => {
           <Button color='secondary' variant='contained'onClick={onNewFile}>Create</Button>
         </DialogActions>
       </Dialog>
+      <Dialog open={openDirectoryDialog} onClose={() => setOpenDirectoryDialog(false)}>
+  <DialogTitle>Create New Directory</DialogTitle>
+  <DialogContent>
+    <DialogContentText>
+      Please enter the new directory name.
+    </DialogContentText>
+    <TextField
+      autoFocus
+      color='background'
+      margin="dense"
+      id="directoryname"
+      label="Directory Name"
+      type="text"
+      fullWidth
+      variant='filled'
+      value={newDirectoryName}
+      onChange={(e) => setNewDirectoryName(e.target.value)}
+    />
+  </DialogContent>
+  <DialogActions>
+    <Button color='secondary' onClick={() => setOpenDirectoryDialog(false)}>Cancel</Button>
+    <Button color='secondary' variant='contained' onClick={onNewDirectory}>Create</Button>
+  </DialogActions>
+</Dialog>
+
     </div>
   );
 };

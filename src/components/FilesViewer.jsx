@@ -6,10 +6,12 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteDialog from './DeleteDialog';
 
-export default function FilesViewer({ files, onBack, onOpen, onFileClick, currentDirectory, onFileDelete }) {
+export default function FilesViewer({ files, onBack, onOpen, onFileClick, currentDirectory, onFileDelete, onDirectoryDelete }) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [fileToDelete, setFileToDelete] = useState(null);
   const [deletedFile, setDeletedFile] = useState(null);
+  const [isDirectoryToDelete, setIsDirectoryToDelete] = useState(false);
+
 
   useEffect(() => {
     if (deletedFile) {
@@ -20,21 +22,34 @@ export default function FilesViewer({ files, onBack, onOpen, onFileClick, curren
     }
   }, [deletedFile]);
 
-  const openDeleteDialog = (file) => {
-    setFileToDelete(file);
+  const openDeleteDialog = (event, file) => {
+    event.stopPropagation();  // Prevents the click event from bubbling up to the ListItem
+    setIsDirectoryToDelete(file.isDirectory);
+    setFileToDelete(file.name);
     setDeleteDialogOpen(true);
   };
+  
 
   const handleFileDelete = () => {
     window.api.invoke('delete-file', currentDirectory, fileToDelete)
       .then(() => {
         console.log('File deleted successfully');
-        setDeletedFile(fileToDelete); // Set the deleted file state to trigger a re-render
+        setDeleteDialogOpen(false);  // Close the delete dialog
         onFileDelete(fileToDelete);
       })
       .catch(console.error);
   };
 
+  const handleDirectoryDelete = () => {
+    window.api.invoke('delete-directory', currentDirectory, fileToDelete)
+      .then(() => {
+        console.log('Directory deleted successfully');
+        setDeleteDialogOpen(false);  // Close the delete dialog
+        onDirectoryDelete(fileToDelete);
+      })
+      .catch(console.error);
+  };
+  
   return (
     <>
       <div>
@@ -50,16 +65,19 @@ export default function FilesViewer({ files, onBack, onOpen, onFileClick, curren
             <ListItem key={index} button onClick={() => file.isDirectory ? onOpen(file.name) : onFileClick(file.name)}>
               {file.isDirectory ? <FolderOpenIcon /> : <InsertDriveFileIcon />}
               <ListItemText primary={file.name} />
-              {!file.isDirectory && (
-                <IconButton edge="end" aria-label="delete" onClick={() => openDeleteDialog(file.name)}>
-                  <DeleteIcon />
-                </IconButton>
-              )}
+              <IconButton edge="end" aria-label="delete" onClick={(event) => openDeleteDialog(event, file)}>
+                <DeleteIcon />
+              </IconButton>
+
             </ListItem>
           ))}
         </List>
       </div>
-      <DeleteDialog open={deleteDialogOpen} handleClose={() => setDeleteDialogOpen(false)} handleConfirm={handleFileDelete} />
+      <DeleteDialog 
+        open={deleteDialogOpen} 
+        handleClose={() => setDeleteDialogOpen(false)} 
+        handleConfirm={isDirectoryToDelete ? handleDirectoryDelete : handleFileDelete} 
+      />
     </>
   );
 }
