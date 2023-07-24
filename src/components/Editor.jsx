@@ -54,7 +54,6 @@ export default function Editor() {
     };
   }, [file]);
   
-  
   const handleSave = (fileName) => {
     console.log('handleSave called');
     const quill = quillRef.current.getEditor();
@@ -72,6 +71,7 @@ export default function Editor() {
         dispatch(quillDelta(JSON.stringify(quill.getContents())));
       })
       .catch(console.error);
+    
   }
 
   const handleCancel = () => {
@@ -112,7 +112,7 @@ export default function Editor() {
         <DialogTitle>Save As</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Enter a filename for the new file:
+            Enter a filename for the new file <strong>If the file already exists, it will be overwritten.</strong> 
           </DialogContentText>
           <TextField
             autoFocus
@@ -122,6 +122,7 @@ export default function Editor() {
             label="Filename"
             type="text"
             variant='filled'
+            value={fileName}
             fullWidth
             onChange={handleFileNameChange}
           />

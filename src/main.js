@@ -3,11 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const rtfToHTML = require('@iarna/rtf-to-html');
 const sqlite3 = require('sqlite3');
-const mkdirp = require('mkdirp');
 const fsExtra = require('fs-extra');
 
-
-// modify your existing createWindow() function
 const createWindow = () => {
   const win = new BrowserWindow({
     width: 1500,
@@ -43,7 +40,10 @@ app.on('activate', () => {
 })
 
 ipcMain.handle('get-app-path', (event) => {
-  return app.getAppPath();
+  const appPath = app.getAppPath();
+  const userFilesPath = path.join(appPath, 'user_files');
+  fs.mkdirSync(userFilesPath, { recursive: true });
+  return appPath;
 });
 
 ipcMain.handle('read-dir', (event, dirPath) => {
@@ -143,10 +143,6 @@ ipcMain.handle('delete-directory', async (event, currentDirectory, directoryToDe
     });
 });
 
-
-
-
-
 //DATABASE
 //connect to database
 const db = new sqlite3.Database('./database.db', (err) => {
@@ -181,7 +177,6 @@ db.run(`CREATE TABLE IF NOT EXISTS entries (
     console.log("main - created or confirmed existence of entries table");
   }
 });
-
 
 ipcMain.handle('create-template', async (event, templateName) => {
   return new Promise((resolve, reject) => {

@@ -8,6 +8,7 @@ import { selectedFile } from '../redux/actions.js';
 export const FileBrowser = () => {
   const dispatch = useDispatch();
   const [path, setPath] = useState(''); // path to the current directory
+  const [appPath, setAppPath] = useState('')
   const [files, setFiles] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [newFileName, setNewFileName] = useState('');
@@ -15,10 +16,12 @@ export const FileBrowser = () => {
   const [openDirectoryDialog, setOpenDirectoryDialog] = useState(false);
 
   useEffect(() => {
-    window.api.invoke('get-app-path').then((appPath) => {
-      if (!path && appPath) {
-        setPath(appPath);
-        console.log('appPath', appPath);
+    window.api.invoke('get-app-path').then((appPathResponse) => {
+      const userFilesPath = pathModule.join(appPathResponse, 'user_files');
+      if (!path && userFilesPath) {
+        setPath(userFilesPath);
+        setAppPath(userFilesPath); // Set the appPath state
+        console.log('appPath', userFilesPath);
       }
     });
   }, [path, setPath]);
@@ -143,6 +146,7 @@ export const FileBrowser = () => {
         onFileDelete={onFileDelete}
         onDirectoryDelete={onDirectoryDelete}
         setFiles={setFiles}
+        appPath={appPath}
       />
       <Dialog open={openDialog} fullWidth={'true'} maxWidth={'sm'} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Create New File</DialogTitle>

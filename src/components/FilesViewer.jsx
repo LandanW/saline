@@ -6,7 +6,9 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteDialog from './DeleteDialog';
 
-export default function FilesViewer({ files, onBack, onOpen, onFileClick, currentDirectory, onFileDelete, onDirectoryDelete }) {
+
+
+export default function FilesViewer({ files, onBack, onOpen, onFileClick, currentDirectory, onFileDelete, onDirectoryDelete, appPath}) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [fileToDelete, setFileToDelete] = useState(null);
   const [deletedFile, setDeletedFile] = useState(null);
@@ -53,11 +55,13 @@ export default function FilesViewer({ files, onBack, onOpen, onFileClick, curren
   return (
     <>
       <div>
-        <Box display="flex" alignItems="center" justifyContent="flex-start">
-          <Button variant="contained" color="primary" startIcon={<ArrowUpwardIcon />} onClick={onBack} disableElevation>
-            ...
-          </Button>
-        </Box>
+        {currentDirectory !== appPath && (
+          <Box display="flex" alignItems="center" justifyContent="flex-start">
+            <Button variant="contained" color="primary" startIcon={<ArrowUpwardIcon />} onClick={onBack} disableElevation>
+              ...
+            </Button>
+          </Box>
+        )}
       </div>
       <div>
         <List>
