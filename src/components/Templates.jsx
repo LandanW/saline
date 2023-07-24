@@ -7,6 +7,8 @@ import TemplateBox from './TemplateBox';
 import EditTemplateDialog from './EditTemplateDialog';
 import { useSelector, useDispatch } from 'react-redux';
 import { showEditDialog, templateArray, menuValue, entries } from '../redux/actions';
+import DeleteDialog from './DeleteDialog';
+
 
 export default function Templates () {
   const dispatch = useDispatch();
@@ -20,6 +22,9 @@ export default function Templates () {
   const [deletedEntries, setDeletedEntries] = useState([]);
   const [filteredTemplates, setFilteredTemplates] = useState(templateData);
   const [newTemplate, setNewTemplate] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [templateToDelete, setTemplateToDelete] = useState(null);
+
   
 
   //fetches all templates from the database
@@ -129,6 +134,15 @@ export default function Templates () {
     closeEditDialog();
   }
 
+  const openDeleteConfirmation = (templateId) => {
+    setTemplateToDelete(templateId);
+    setOpenDeleteDialog(true);
+  };
+  
+  const confirmDeleteTemplate = () => {
+    deleteTemplate(templateToDelete);
+    setOpenDeleteDialog(false);
+  };  
   
   const searchTemplates = (event) => {
     const searchValue = event.target.value.toLowerCase();
@@ -158,7 +172,8 @@ export default function Templates () {
         close={closeEditDialog} 
         save={handleSave} 
         templateName={templateName}
-        deleteTemplate={deleteTemplate}
+        //deleteTemplate={deleteTemplate}
+        deleteTemplate={() => openDeleteConfirmation(templateId)}
         setTemplateName={setTemplateName}
         setDeletedEntries={setDeletedEntries}
         newTemplate={newTemplate}
@@ -179,6 +194,11 @@ export default function Templates () {
           /> 
         ))}
       </div>
+      <DeleteDialog 
+        open={openDeleteDialog} 
+        handleClose={() => setOpenDeleteDialog(false)} 
+        handleConfirm={confirmDeleteTemplate} 
+      />
     </Box>
   )
 }
