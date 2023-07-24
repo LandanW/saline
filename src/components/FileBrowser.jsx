@@ -144,7 +144,7 @@ export const FileBrowser = () => {
         onDirectoryDelete={onDirectoryDelete}
         setFiles={setFiles}
       />
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+      <Dialog open={openDialog} fullWidth={'true'} maxWidth={'sm'} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Create New File</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -168,31 +168,30 @@ export const FileBrowser = () => {
           <Button color='secondary' variant='contained'onClick={onNewFile}>Create</Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={openDirectoryDialog} onClose={() => setOpenDirectoryDialog(false)}>
-  <DialogTitle>Create New Directory</DialogTitle>
-  <DialogContent>
-    <DialogContentText>
-      Please enter the new directory name.
-    </DialogContentText>
-    <TextField
-      autoFocus
-      color='background'
-      margin="dense"
-      id="directoryname"
-      label="Directory Name"
-      type="text"
-      fullWidth
-      variant='filled'
-      value={newDirectoryName}
-      onChange={(e) => setNewDirectoryName(e.target.value)}
-    />
-  </DialogContent>
-  <DialogActions>
-    <Button color='secondary' onClick={() => setOpenDirectoryDialog(false)}>Cancel</Button>
-    <Button color='secondary' variant='contained' onClick={onNewDirectory}>Create</Button>
-  </DialogActions>
-</Dialog>
-
+      <Dialog open={openDirectoryDialog}  fullWidth={'true'} maxWidth={'sm'} onClose={() => setOpenDirectoryDialog(false)}>
+        <DialogTitle>Create New Directory</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Please enter the new directory name.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            color='background'
+            margin="dense"
+            id="directoryname"
+            label="Directory Name"
+            type="text"
+            fullWidth
+            variant='filled'
+            value={newDirectoryName}
+            onChange={(e) => setNewDirectoryName(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button color='secondary' onClick={() => setOpenDirectoryDialog(false)}>Cancel</Button>
+          <Button color='secondary' variant='contained' onClick={onNewDirectory}>Create</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

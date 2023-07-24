@@ -108,7 +108,7 @@ export default function Editor() {
           Save As
         </Button>
       </div>
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={open} fullWidth={'true'} maxWidth={'sm'} onClose={handleClose}>
         <DialogTitle>Save As</DialogTitle>
         <DialogContent>
           <DialogContentText>
