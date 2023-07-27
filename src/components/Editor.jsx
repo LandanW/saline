@@ -2,7 +2,7 @@ import React, { useEffect, useCallback, useRef, useState } from 'react';
 import path from 'path';
 import ReactQuill from 'react-quill';
 import { useSelector, useDispatch } from 'react-redux';
-import { quillDelta } from '../redux/actions';
+import { quillDelta, refreshFiles } from '../redux/actions';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material';
 import 'react-quill/dist/quill.snow.css';
 
@@ -15,6 +15,7 @@ export default function Editor() {
   const file = useSelector(state => state.selectedFile);
   const quillDeltaData = useSelector(state => state.quillDelta);
   const originalQuillDeltaData = useSelector(state => state.originalQuillDelta);
+
 
   // Check if the data is defined and is a valid JSON string
   const isJSON = (str) => {
@@ -69,11 +70,11 @@ export default function Editor() {
       .then(() => {
         console.log('File saved');
         dispatch(quillDelta(JSON.stringify(quill.getContents())));
+        dispatch(refreshFiles());  // Dispatch the refreshFiles action here
       })
       .catch(console.error);
-    
   }
-
+  
   const handleCancel = () => {
     dispatch(quillDelta(originalQuillDeltaData));
   }

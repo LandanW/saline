@@ -8,7 +8,7 @@ import DeleteDialog from './DeleteDialog';
 
 
 
-export default function FilesViewer({ files, onBack, onOpen, onFileClick, currentDirectory, onFileDelete, onDirectoryDelete, appPath}) {
+export default function FilesViewer({ files, onBack, onOpen, onFileClick, currentDirectory, onFileDelete, onDirectoryDelete, appPath, keyProp}) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [fileToDelete, setFileToDelete] = useState(null);
   const [deletedFile, setDeletedFile] = useState(null);
@@ -23,6 +23,8 @@ export default function FilesViewer({ files, onBack, onOpen, onFileClick, curren
       setDeleteDialogOpen(false); // Close the delete dialog
     }
   }, [deletedFile]);
+
+  
 
   const openDeleteDialog = (event, file) => {
     event.stopPropagation();  // Prevents the click event from bubbling up to the ListItem

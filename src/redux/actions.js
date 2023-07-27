@@ -9,6 +9,8 @@ export const SELECTED_FILE = 'SELECTED_FILE';
 export const QUILL_DELTA = 'QUILL_DELTA';
 export const ORIGINAL_QUILL_DELTA = 'ORIGINAL_QUILL_DELTA';
 export const TEMPLATE_APPLIED = 'TEMPLATE_APPLIED';
+export const REFRESH_FILES = 'REFRESH_FILES';
+
 
 export const showEditDialog = (showEditDialog) => ({
   type: SHOW_EDIT_DIALOG,
@@ -64,3 +66,14 @@ export const templateApplied = (templateApplied) => ({
   type: TEMPLATE_APPLIED,
   payload: templateApplied,
 });
+
+export const refreshFiles = () => {
+  return (() => {
+    console.log('refreshFiles action dispatched');
+    return {
+      type: REFRESH_FILES,
+      payload: Date.now(),  // Use the current timestamp as payload to ensure a new value is always dispatched
+    };
+  })();
+};
+

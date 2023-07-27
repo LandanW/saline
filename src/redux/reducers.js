@@ -10,6 +10,7 @@ import {
   QUILL_DELTA,
   ORIGINAL_QUILL_DELTA,
   TEMPLATE_APPLIED,
+  REFRESH_FILES,
 } from './actions';
 
 const initialState = {
@@ -23,6 +24,7 @@ const initialState = {
   selectedFile: '',
   quillDelta: null,
   templateApplied: '',
+  REFRESH_FILES: '',
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -81,6 +83,11 @@ const rootReducer = (state = initialState, action) => {
       return {
         ...state,
         templateApplied: action.payload,
+      };
+    case REFRESH_FILES:
+      return {
+        ...state,
+        refreshFiles: action.payload,
       };
     default:
       return state;

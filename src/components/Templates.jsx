@@ -172,7 +172,6 @@ export default function Templates () {
         close={closeEditDialog} 
         save={handleSave} 
         templateName={templateName}
-        //deleteTemplate={deleteTemplate}
         deleteTemplate={() => openDeleteConfirmation(templateId)}
         setTemplateName={setTemplateName}
         setDeletedEntries={setDeletedEntries}

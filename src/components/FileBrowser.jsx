@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import pathModule from 'path';
 import FilesViewer from './FilesViewer.jsx';
 import { TextField, Divider, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Box } from '@mui/material';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectedFile } from '../redux/actions.js';
 
 export const FileBrowser = () => {
@@ -14,6 +14,8 @@ export const FileBrowser = () => {
   const [newFileName, setNewFileName] = useState('');
   const [newDirectoryName, setNewDirectoryName] = useState('');
   const [openDirectoryDialog, setOpenDirectoryDialog] = useState(false);
+  const refreshFiles = useSelector(state => state.refreshFiles);
+
 
   useEffect(() => {
     window.api.invoke('get-app-path').then((appPathResponse) => {
@@ -31,6 +33,13 @@ export const FileBrowser = () => {
       window.api.invoke('read-dir', path).then(setFiles);
     }
   }, [path]);
+
+  useEffect(() => {
+    if (path !== '') {
+      window.api.invoke('read-dir', path).then(setFiles);
+    }
+  }, [path, refreshFiles]);  // Add refreshFiles as a dependency  
+
 
   const onBack = () => setPath(pathModule.dirname(path));
   const onOpen = (folder) => {
@@ -147,6 +156,7 @@ export const FileBrowser = () => {
         onDirectoryDelete={onDirectoryDelete}
         setFiles={setFiles}
         appPath={appPath}
+        keyProp={refreshFiles}
       />
       <Dialog open={openDialog} fullWidth={'true'} maxWidth={'sm'} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Create New File</DialogTitle>
