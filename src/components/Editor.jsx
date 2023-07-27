@@ -97,7 +97,7 @@ export default function Editor() {
   
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <ReactQuill theme="snow" ref={quillRef} style={{ flexGrow: 1 }}/>
+      <ReactQuill theme="snow" ref={quillRef} style={{ flexGrow: 1 }}/> 
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', padding: '10px' }}>
         {hasQuillDeltaChanged && 
           <Button variant="contained" color="primary" onClick={handleCancel}>

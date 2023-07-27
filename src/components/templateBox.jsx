@@ -56,8 +56,12 @@ export default function TemplateBox(props) {
     });
     setDynamicReplacementText({});
   };
-  
-  
+
+  const handleCancel = () => {
+    dispatch(originalQuillDelta(quillDeltaData));
+    setOpen(false);
+  };
+
   const handleEditOpen = () => {
     console.log('edit open');
     props.setTemplateName(props.template.name);
@@ -181,7 +185,7 @@ export default function TemplateBox(props) {
           ))}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="secondary">
+          <Button onClick={handleCancel} color="secondary">
             Cancel
           </Button>
           <Button onClick={handleClose} color="secondary" variant='contained'>
