@@ -4,6 +4,7 @@ const path = require('path');
 const rtfToHTML = require('@iarna/rtf-to-html');
 const sqlite3 = require('sqlite3');
 const fsExtra = require('fs-extra');
+const isDev = require('electron-is-dev');
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -18,7 +19,11 @@ const createWindow = () => {
     }
   })
 
-  win.loadURL('http://localhost:3000')
+  win.loadURL(
+    isDev
+      ? 'http://localhost:3000'
+      : `file://${path.join(__dirname, '../build/index.html')}`
+    )
 }
 
 app.on('ready', createWindow)
@@ -40,10 +45,10 @@ app.on('activate', () => {
 })
 
 ipcMain.handle('get-app-path', (event) => {
-  const appPath = app.getAppPath();
-  const userFilesPath = path.join(appPath, 'user_files');
+  const userDataPath = app.getPath('userData');
+  const userFilesPath = path.join(userDataPath, 'user_files');
   fs.mkdirSync(userFilesPath, { recursive: true });
-  return appPath;
+  return userDataPath;
 });
 
 ipcMain.handle('read-dir', (event, dirPath) => {
