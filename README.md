@@ -2,22 +2,22 @@
 
 ## About Saline
 
-Saline is an Electron application designed for inserting information into templates. It's a versatile tool developed by Landan Wrightsman, aiming to enhance productivity and streamline workflows.
+Saline is an open source Electron application that aims to streamline the document creation process for repetitive tasks such as Invoices.
 
 ## Building from Source
 
 ### Prerequisites
 
 Before you begin, ensure you have the following installed:
-- Node.js (preferably the latest stable version)
-- Yarn or npm (Yarn is recommended for consistency with existing scripts)
+- Node.js 
+- Yarn or npm 
 
 ### Steps to Build
 
 1. **Clone the Repository**
    - Use Git to clone the repository to your local machine:
      ```bash
-     git clone <https://github.com/LandanW/saline>
+     git clone https://github.com/LandanW/saline
      ```
 
 2. **Navigate to the Project Directory**
@@ -27,13 +27,13 @@ Before you begin, ensure you have the following installed:
      ```
 
 3. **Install Dependencies**
-   - Run the following command to install the necessary dependencies:
+   - Install the necessary dependencies:
      ```bash
      yarn install
      ```
 
 4. **Build the Application**
-   - Use the provided script to build the app:
+   - Build the app:
      ```bash
      yarn electron:build
      ```
