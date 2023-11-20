@@ -1,4 +1,4 @@
-# README for Saline Electron App
+# Saline
 
 ## About Saline
 
