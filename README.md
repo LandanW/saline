@@ -15,25 +15,21 @@ Before you begin, ensure you have the following installed:
 ### Steps to Build
 
 1. **Clone the Repository**
-   - Use Git to clone the repository to your local machine:
      ```bash
      git clone https://github.com/LandanW/saline
      ```
 
 2. **Navigate to the Project Directory**
-   - Change to the project directory:
      ```bash
      cd saline
      ```
 
 3. **Install Dependencies**
-   - Install the necessary dependencies:
      ```bash
      yarn install
      ```
 
 4. **Build the Application**
-   - Build the app:
      ```bash
      yarn electron:build
      ```
